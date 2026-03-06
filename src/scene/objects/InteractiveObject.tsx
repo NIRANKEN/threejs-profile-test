@@ -39,7 +39,7 @@ export default function InteractiveObject({ sectionId, children }: Props) {
     setHovered(true)
   }
 
-  function handlePointerOut(_e: ThreeEvent<PointerEvent>) {
+  function handlePointerOut() {
     setHovered(false)
   }
 

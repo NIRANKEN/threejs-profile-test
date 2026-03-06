@@ -10,3 +10,14 @@ Currently, two official plugins are available:
 ## 起動方法
 
 `pnpm dev` で起動します。
+
+## 主要ライブラリのバージョン
+
+このリポジトリでは常に最新のパッケージを試用するため、定期的に更新を行っています。
+
+現在の主要パッケージのバージョン:
+- React: 19.2.4
+- Three.js: 0.183.2
+- @react-three/fiber: 9.5.0
+- @react-three/drei: 10.7.7
+- Vite: 7.3.1
