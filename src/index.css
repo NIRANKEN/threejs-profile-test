@@ -1,68 +1,528 @@
+/* ===== Reset & Base ===== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
-  color-scheme: light dark;
+  color-scheme: dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
+  background-color: #0f0f14;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
 body {
   margin: 0;
+  overflow: hidden;
+  background-color: #0f0f14;
+}
+
+/* ===== Panel Overlay ===== */
+/* Canvasの前面にfixedで重ねる透明レイヤー */
+.panel-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none; /* hidden時はCanvas操作を妨げない */
   display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 2rem;
+  z-index: 10;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+.panel-overlay--visible {
+  pointer-events: auto;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
+/* パネル本体カード */
+.panel-container {
+  position: relative;
+  width: min(480px, 90vw);
+  max-height: 80vh;
+  overflow-y: auto;
+  background: rgba(10, 10, 18, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 2rem;
+  color: white;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+
+  /* 初期状態: 非表示 */
+  opacity: 0;
+  transform: translateX(40px);
+  transition:
+    opacity 0.35s ease,
+    transform 0.35s ease;
+}
+
+.panel-overlay--visible .panel-container {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* 閉じるボタン */
+.panel-close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  color: white;
+  font-size: 1.1rem;
   cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  transition: background 0.2s;
+  line-height: 1;
+  padding: 0;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+.panel-close-btn:hover {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.panel-close-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ===== Panel Contents ===== */
+.panel-content {
+  padding-top: 0.5rem;
+}
+
+.panel-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 1.25rem;
+  letter-spacing: 0.04em;
+  background: linear-gradient(135deg, #ffffff 0%, #a0a0cc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Profile Panel */
+.panel-avatar {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+.panel-name {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 0 0 0.25rem;
+}
+
+.panel-role {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0 0 1rem;
+  letter-spacing: 0.03em;
+}
+
+.panel-bio {
+  font-size: 0.92rem;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.78);
+  margin: 0 0 1.25rem;
+}
+
+.panel-links {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.panel-link {
+  display: inline-block;
+  padding: 0.4em 1em;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  color: white;
+  text-decoration: none;
+  font-size: 0.875rem;
+  transition: background 0.2s;
+}
+
+.panel-link:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* Skills Panel */
+.panel-skills {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.panel-skill-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.panel-skill-category {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.panel-skill-tags {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.panel-tag {
+  padding: 0.3em 0.75em;
+  background: rgba(100, 108, 255, 0.2);
+  border: 1px solid rgba(100, 108, 255, 0.35);
+  border-radius: 6px;
+  font-size: 0.82rem;
+  color: rgba(200, 205, 255, 0.9);
+}
+
+/* Works Panel */
+.panel-works {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.panel-work-card {
+  display: block;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  text-decoration: none;
+  color: white;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.panel-work-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.panel-work-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 0.4rem;
+}
+
+.panel-work-desc {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.65);
+  margin: 0 0 0.75rem;
+  line-height: 1.6;
+}
+
+/* Contact Panel */
+.panel-contact-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.panel-contact-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  text-decoration: none;
+  color: white;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.panel-contact-item:hover {
+  background: rgba(255, 255, 255, 0.09);
+}
+
+.panel-contact-icon {
+  font-size: 1.25rem;
+  width: 1.5rem;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* ===== Dev HUD (開発環境のみ表示) ===== */
+.dev-hud {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 0.55rem 0.8rem;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.73rem;
+  line-height: 1.65;
+  color: #c8ffb0;
+  pointer-events: none; /* クリックをシーンに透過 */
+  user-select: none;
+  min-width: 230px;
+}
+
+.dev-hud__title {
+  margin: 0 0 0.3rem;
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.dev-hud__row {
+  margin: 0;
+  white-space: pre;
+  color: #aaffcc;
+}
+
+.dev-hud__axes {
+  display: flex;
+  gap: 0.9rem;
+  margin-top: 0.4rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+/* ===== Help Button ===== */
+.help-btn {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 1.5rem;
+  z-index: 20;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(15, 15, 20, 0.75);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.help-btn:hover {
+  background: rgba(100, 108, 255, 0.3);
+  border-color: rgba(100, 108, 255, 0.6);
+  color: white;
+}
+
+/* ===== Help Backdrop ===== */
+.help-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  animation: help-fade-in 0.2s ease;
+}
+
+@keyframes help-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ===== Help Dialog ===== */
+.help-dialog {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 1.5rem;
+  z-index: 31;
+  width: min(420px, calc(100vw - 3rem));
+  max-height: calc(100vh - 3rem);
+  overflow-y: auto;
+  background: rgba(10, 10, 18, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  color: white;
+  box-shadow: 0 8px 48px rgba(0, 0, 0, 0.7);
+
+  /* 初期状態: 非表示 */
+  opacity: 0;
+  transform: translateY(12px) scale(0.97);
+  pointer-events: none;
+  transition: opacity 0.22s ease, transform 0.22s ease;
+}
+
+.help-dialog--open {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+/* ダイアログ ヘッダー */
+.help-dialog__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.25rem 0;
+}
+
+.help-dialog__title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: 0.04em;
+  background: linear-gradient(135deg, #ffffff 0%, #a0a0cc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.help-dialog__close {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 50%;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.help-dialog__close:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* ダイアログ ボディ */
+.help-dialog__body {
+  padding: 1rem 1.25rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* セクション */
+.help-section__title {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+  margin: 0 0 0.75rem;
+}
+
+/* 操作リスト */
+.help-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.help-list__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.help-list__icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+  margin-top: 0.05em;
+}
+
+.help-list__item strong {
+  color: white;
+  font-weight: 600;
+}
+
+.help-list__item kbd {
+  display: inline-block;
+  padding: 0.1em 0.45em;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 0.82em;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* クリックできるオブジェクト一覧 */
+.help-objects {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.help-object {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.75rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+}
+
+.help-object__icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.help-object__info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.help-object__name {
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.help-object__section {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: rgba(100, 108, 255, 0.9);
+  letter-spacing: 0.04em;
 }
