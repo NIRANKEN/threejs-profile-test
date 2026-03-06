@@ -21,17 +21,17 @@ export interface CameraPosition {
  *   target:   部屋の中心やや奥を注視
  */
 export const OVERVIEW_CAMERA: CameraPosition = {
-  position: [0, 2.5, 1.0],
-  target: [0, 2.0, -5.0],
+  position: [0, 1.6, 1.5],
+  target: [0, 1.6, 0],
 }
 
 export const SECTION_CAMERAS: Record<SectionId, CameraPosition> = {
   // Profile: ベッドの足元から頭部方向を見る
-  profile: { position: [-1.0, 2.2, -0.36], target: [-0.45, 1.9, -0.15] },
+  profile: { position: [-0.5, 1.6, 0.5], target: [2.3, 0.6, 1.1] },
   // Skills: PCケースの正面から見る
-  skills: { position: [-1.4, 1.5, 0.8], target: [-1.5, 0.6, -1.6] },
+  skills: { position: [-0.5, 1.2, -1.0], target: [-1.5, 0.4, -1.7] },
   // Works: モニターの正面から見る
-  works: { position: [-1.5, 1.8, 0.5], target: [-2.3, 1.4, -1.8] },
+  works: { position: [-1.5, 1.4, -1.0], target: [-2.3, 1.4, -2.0] },
   // Contact: 本の正面から見る
-  contact: { position: [1.5, 1.8, 0.5], target: [1.8, 1.1, -1.7] },
+  contact: { position: [1.0, 1.4, -1.0], target: [2.0, 1.2, -1.9] },
 }
