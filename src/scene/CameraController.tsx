@@ -1,31 +1,58 @@
 import { useRef, useEffect } from 'react'
 import { Box3, Vector3 } from 'three'
 import { CameraControls } from '@react-three/drei'
+import { useFrame } from '@react-three/fiber'
 import type CameraControlsImpl from 'camera-controls'
 import { usePortfolioStore } from '../store/usePortfolioStore'
 import { OVERVIEW_CAMERA, SECTION_CAMERAS } from '../types/sections'
 
 // ─── カメラ制約定数 ────────────────────────────────────────────────────────────
+const POS_VEC = new Vector3()
+const TGT_VEC = new Vector3()
+
 /**
- * カメラ位置の境界ボックス (sections.ts の座標メモに合わせて設定)
- *   Room 実寸: X:-2.5〜+2.5, Y:0〜3.1, Z:-2.2〜+2.0
- *   各方向に 0.5〜0.8 の余白を追加し、室内探索を許容しつつ壁抜けを防ぐ
- *
- *   X: -3.0 ~ 3.0
- *   Y:  0.3 ~ 3.8  (床より少し上 ～ 天井より少し上)
- *   Z: -3.0 ~ 2.5  (奥壁 + 余白 ～ 手前 + 余白)
+ * カメラターゲットの境界ボックス
  */
 const ROOM_BOUNDARY = new Box3(
-  new Vector3(-3.0, 0.3, -3.0),
-  new Vector3( 3.0, 3.8,  2.5),
+  new Vector3(-2.3, 0.0, -2.1),
+  new Vector3( 2.3, 3.2,  2.1),
 )
+
+// 移動可能な床エリアの判定 (カメラ位置の制限)
+const isPositionInWalkingArea = (x: number, z: number) => {
+  // 部屋全体の床範囲
+  if (x < -2.1 || x > 2.1 || z < -1.9 || z > 1.7) return false
+
+  // オブジェクトのある場所を避ける
+  // ベッドエリア (右側奥)
+  if (x > 0.4 && z > 0.0) return false
+  // デスク・PCエリア (左側奥)
+  if (x < -0.4 && z < -0.4) return false
+
+  return true
+}
 
 export default function CameraController() {
   const ref = useRef<CameraControlsImpl>(null)
   const activeSection = usePortfolioStore((s) => s.activeSection)
   const setCameraControlsRef = usePortfolioStore((s) => s.setCameraControlsRef)
   const setTransitioning = usePortfolioStore((s) => s.setTransitioning)
+  const isTransitioning = usePortfolioStore((s) => s.isTransitioning)
   const isFirstMount = useRef(true)
+
+  // キー入力状態を管理
+  const keys = useRef<{ [key: string]: boolean }>({})
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => { keys.current[e.code] = true }
+    const handleKeyUp = (e: KeyboardEvent) => { keys.current[e.code] = false }
+    window.addEventListener('keydown', handleKeyDown)
+    window.addEventListener('keyup', handleKeyUp)
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+      window.removeEventListener('keyup', handleKeyUp)
+    }
+  }, [])
 
   // CameraControlsのrefをstoreに登録 + 境界ボックスを設定
   useEffect(() => {
@@ -34,6 +61,59 @@ export default function CameraController() {
     if (!controls) return
     controls.setBoundary(ROOM_BOUNDARY)
   }, [setCameraControlsRef])
+
+  // WASD移動制御
+  useFrame((_, delta) => {
+    const controls = ref.current
+    if (!controls || activeSection || isTransitioning) return
+
+    const moveSpeed = 3.0 * delta
+    let hasMoved = false
+
+    if (keys.current['KeyW']) {
+      controls.forward(moveSpeed, false)
+      hasMoved = true
+    }
+    if (keys.current['KeyS']) {
+      controls.forward(-moveSpeed, false)
+      hasMoved = true
+    }
+    if (keys.current['KeyA']) {
+      controls.truck(-moveSpeed, 0, false)
+      hasMoved = true
+    }
+    if (keys.current['KeyD']) {
+      controls.truck(moveSpeed, 0, false)
+      hasMoved = true
+    }
+
+    if (hasMoved) {
+      controls.getPosition(POS_VEC)
+      controls.getTarget(TGT_VEC)
+
+      // 高さ(Y)を一定に固定 (1.6m 程度の目線)
+      const yDiff = 1.6 - POS_VEC.y
+      POS_VEC.y = 1.6
+      TGT_VEC.y += yDiff
+
+      // 移動制限エリア外に出ようとした場合は押し戻す
+      if (!isPositionInWalkingArea(POS_VEC.x, POS_VEC.z)) {
+        POS_VEC.x = Math.max(-2.1, Math.min(2.1, POS_VEC.x))
+        POS_VEC.z = Math.max(-1.9, Math.min(1.7, POS_VEC.z))
+
+        if (POS_VEC.x > 0.4 && POS_VEC.z > 0.0) {
+          if (POS_VEC.x - 0.4 < POS_VEC.z - 0.0) POS_VEC.x = 0.4
+          else POS_VEC.z = 0.0
+        }
+        if (POS_VEC.x < -0.4 && POS_VEC.z < -0.4) {
+          if (-0.4 - POS_VEC.x < -0.4 - POS_VEC.z) POS_VEC.x = -0.4
+          else POS_VEC.z = -0.4
+        }
+      }
+
+      controls.setLookAt(POS_VEC.x, POS_VEC.y, POS_VEC.z, TGT_VEC.x, TGT_VEC.y, TGT_VEC.z, false)
+    }
+  })
 
   // アクティブセクション変更時にカメラをスムーズに移動
   useEffect(() => {
@@ -74,22 +154,32 @@ export default function CameraController() {
       makeDefault
       smoothTime={0.6}
       // ── ズーム制限 (室内スケール基準) ────────────────────────────────────────
-      // ターゲットからの最小距離: オブジェクトに潜り込まない
-      minDistance={0.3}
-      // ターゲットからの最大距離: 部屋が画角に収まる上限 (部屋は約 5 units 幅)
-      maxDistance={2.0}
+      // ターゲットからの最小距離
+      minDistance={0.1}
+      // ターゲットからの最大距離
+      maxDistance={3.0}
       // ── 縦方向の角度制限 ────────────────────────────────────────────────────
-      // 天頂方向: 30° (0.52 rad) — 真上を向きすぎない
+      // 天頂方向: 30° (0.52 rad)
       minPolarAngle={0.52}
-      // 天底方向: 120° (2.09 rad) — 床を突き抜けて見下ろしすぎない
+      // 天底方向: 120° (2.09 rad)
       maxPolarAngle={2.09}
       // ── 境界の反発係数 ──────────────────────────────────────────────────────
-      // 0 = 硬い壁, 1 = 完全に弾む。0.15 で柔らかく止まる感触
       boundaryFriction={0.15}
-      // カメラ自身を境界ボックス内に収める (壁抜け防止 & NaN 対策)
-      boundaryEnclosesCamera={true}
       // ── ズームをカーソル位置に向かうようにする ───────────────────────────
       dollyToCursor
+      // ── 操作制限 ──────────────────────────────────────────────────────────
+      // 右クリックパンを無効化し、左クリック回転のみにする
+      mouseButtons={{
+        left: 1, // ACTION.ROTATE
+        middle: 0, // ACTION.NONE
+        right: 0, // ACTION.NONE
+        wheel: 8, // ACTION.DOLLY
+      }}
+      touches={{
+        one: 32, // ACTION.TOUCH_ROTATE
+        two: 512, // ACTION.TOUCH_DOLLY_TRUCK
+        three: 0, // ACTION.NONE
+      }}
     />
   )
 }

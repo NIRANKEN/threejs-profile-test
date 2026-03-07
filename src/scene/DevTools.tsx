@@ -16,7 +16,7 @@ import { usePortfolioStore } from '../store/usePortfolioStore'
 const _tgt = new Vector3()
 
 // ─── Canvas 内コンポーネント ─────────────────────────────────────────────────
-function InnerSceneDevTools() {
+function SceneDevToolsInternal() {
   const { camera } = useThree()
   const cameraControlsRef = usePortfolioStore((s) => s.cameraControlsRef)
 
@@ -61,7 +61,7 @@ function InnerSceneDevTools() {
 /** 開発環境のみ Scene に追加するカメラデバッグツール */
 export function SceneDevTools() {
   if (!import.meta.env.DEV) return null
-  return <InnerSceneDevTools />
+  return <SceneDevToolsInternal />
 }
 
 // ─── Canvas 外 HTML オーバーレイ ─────────────────────────────────────────────
