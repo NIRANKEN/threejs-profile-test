@@ -86,6 +86,8 @@ export default function CameraController() {
       // ── 境界の反発係数 ──────────────────────────────────────────────────────
       // 0 = 硬い壁, 1 = 完全に弾む。0.15 で柔らかく止まる感触
       boundaryFriction={0.15}
+      // カメラ自身を境界ボックス内に収める (壁抜け防止 & NaN 対策)
+      boundaryEnclosesCamera={true}
       // ── ズームをカーソル位置に向かうようにする ───────────────────────────
       dollyToCursor
     />
