@@ -10,3 +10,9 @@ Currently, two official plugins are available:
 ## 起動方法
 
 `pnpm dev` で起動します。
+
+## 主要ライブラリのバージョン
+
+このリポジトリでは常に最新のパッケージを試用するため、定期的に更新を行っています。
+
+現在の主要パッケージのバージョンについては、 [package.json](./package.json) を参照してください。
