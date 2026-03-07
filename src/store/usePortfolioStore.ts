@@ -7,18 +7,22 @@ interface PortfolioState {
   activeSection: SectionId | null
   cameraControlsRef: RefObject<CameraControlsImpl | null> | null
   isTransitioning: boolean
+  isHelpOpen: boolean
 
   setActiveSection: (section: SectionId | null) => void
   setCameraControlsRef: (ref: RefObject<CameraControlsImpl | null>) => void
   setTransitioning: (v: boolean) => void
+  setHelpOpen: (open: boolean) => void
 }
 
 export const usePortfolioStore = create<PortfolioState>((set) => ({
   activeSection: null,
   cameraControlsRef: null,
   isTransitioning: false,
+  isHelpOpen: false,
 
   setActiveSection: (section) => set({ activeSection: section }),
   setCameraControlsRef: (ref) => set({ cameraControlsRef: ref }),
   setTransitioning: (v) => set({ isTransitioning: v }),
+  setHelpOpen: (open) => set({ isHelpOpen: open }),
 }))

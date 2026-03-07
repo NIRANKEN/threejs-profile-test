@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
+import { usePortfolioStore } from '../store/usePortfolioStore'
 
 const SECTIONS = [
   { icon: '🛏️', label: 'ベッド',     section: 'Profile' },
@@ -8,7 +9,8 @@ const SECTIONS = [
 ] as const
 
 export default function HelpButton() {
-  const [open, setOpen] = useState(false)
+  const open = usePortfolioStore((s) => s.isHelpOpen)
+  const setOpen = usePortfolioStore((s) => s.setHelpOpen)
 
   // ESC で閉じる
   useEffect(() => {
@@ -16,9 +18,11 @@ export default function HelpButton() {
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setOpen(false)
     }
+    // イベント伝播を制御するため、PanelOverlayよりも先に登録されるようにするか
+    // または優先度を意識する。ここでは単純にEscapeで閉じる。
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
-  }, [open])
+  }, [open, setOpen])
 
   return (
     <>

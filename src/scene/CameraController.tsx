@@ -7,6 +7,9 @@ import { usePortfolioStore } from '../store/usePortfolioStore'
 import { OVERVIEW_CAMERA, SECTION_CAMERAS } from '../types/sections'
 
 // ─── カメラ制約定数 ────────────────────────────────────────────────────────────
+const POS_VEC = new Vector3()
+const TGT_VEC = new Vector3()
+
 /**
  * カメラターゲットの境界ボックス
  */
@@ -85,32 +88,30 @@ export default function CameraController() {
     }
 
     if (hasMoved) {
-      const pos = new Vector3()
-      const tgt = new Vector3()
-      controls.getPosition(pos)
-      controls.getTarget(tgt)
+      controls.getPosition(POS_VEC)
+      controls.getTarget(TGT_VEC)
 
       // 高さ(Y)を一定に固定 (1.6m 程度の目線)
-      const yDiff = 1.6 - pos.y
-      pos.y = 1.6
-      tgt.y += yDiff
+      const yDiff = 1.6 - POS_VEC.y
+      POS_VEC.y = 1.6
+      TGT_VEC.y += yDiff
 
       // 移動制限エリア外に出ようとした場合は押し戻す
-      if (!isPositionInWalkingArea(pos.x, pos.z)) {
-        pos.x = Math.max(-2.1, Math.min(2.1, pos.x))
-        pos.z = Math.max(-1.9, Math.min(1.7, pos.z))
+      if (!isPositionInWalkingArea(POS_VEC.x, POS_VEC.z)) {
+        POS_VEC.x = Math.max(-2.1, Math.min(2.1, POS_VEC.x))
+        POS_VEC.z = Math.max(-1.9, Math.min(1.7, POS_VEC.z))
 
-        if (pos.x > 0.4 && pos.z > 0.0) {
-          if (pos.x - 0.4 < pos.z - 0.0) pos.x = 0.4
-          else pos.z = 0.0
+        if (POS_VEC.x > 0.4 && POS_VEC.z > 0.0) {
+          if (POS_VEC.x - 0.4 < POS_VEC.z - 0.0) POS_VEC.x = 0.4
+          else POS_VEC.z = 0.0
         }
-        if (pos.x < -0.4 && pos.z < -0.4) {
-          if (-0.4 - pos.x < -0.4 - pos.z) pos.x = -0.4
-          else pos.z = -0.4
+        if (POS_VEC.x < -0.4 && POS_VEC.z < -0.4) {
+          if (-0.4 - POS_VEC.x < -0.4 - POS_VEC.z) POS_VEC.x = -0.4
+          else POS_VEC.z = -0.4
         }
       }
 
-      controls.setLookAt(pos.x, pos.y, pos.z, tgt.x, tgt.y, tgt.z, false)
+      controls.setLookAt(POS_VEC.x, POS_VEC.y, POS_VEC.z, TGT_VEC.x, TGT_VEC.y, TGT_VEC.z, false)
     }
   })
 

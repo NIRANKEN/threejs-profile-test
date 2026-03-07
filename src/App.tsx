@@ -19,28 +19,16 @@ class ErrorBoundary extends Component<{ children: ReactNode }, EBState> {
   render() {
     if (this.state.error) {
       return (
-        <div style={{
-          position: 'fixed', inset: 0, background: '#0f0f14', color: '#ff6b6b',
-          display: 'flex', flexDirection: 'column', alignItems: 'center',
-          justifyContent: 'center', padding: '2rem', fontFamily: 'monospace',
-        }}>
-          <h2 style={{ margin: '0 0 1rem', color: '#ff6b6b' }}>⚠ Render Error</h2>
-          <pre style={{
-            background: '#1a1a2e', padding: '1.5rem', borderRadius: '8px',
-            maxWidth: '90vw', overflow: 'auto', fontSize: '0.8rem', lineHeight: 1.6,
-            color: '#e0e0e0', whiteSpace: 'pre-wrap',
-          }}>
+        <div className="error-boundary">
+          <h2 className="error-boundary__title">⚠ Render Error</h2>
+          <pre className="error-boundary__pre">
             {this.state.error.message}
             {'\n\n'}
             {this.state.error.stack}
           </pre>
           <button
             onClick={() => this.setState({ error: null })}
-            style={{
-              marginTop: '1.5rem', padding: '0.6em 1.5em', background: '#646cff',
-              color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer',
-              fontSize: '0.9rem',
-            }}
+            className="error-boundary__retry"
           >
             Retry
           </button>
@@ -53,23 +41,7 @@ class ErrorBoundary extends Component<{ children: ReactNode }, EBState> {
 
 // ─── Loading Screen ───────────────────────────────────────────────────────────
 function LoadingScreen() {
-  return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: '#0f0f14',
-        color: 'white',
-        fontSize: '1.2rem',
-        letterSpacing: '0.05em',
-      }}
-    >
-      Loading...
-    </div>
-  )
+  return <div className="loading-screen">Loading...</div>
 }
 
 // ─── App ──────────────────────────────────────────────────────────────────────
