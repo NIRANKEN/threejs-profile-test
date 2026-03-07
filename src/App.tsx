@@ -4,7 +4,6 @@ import { Canvas } from '@react-three/fiber'
 import SceneRoot from './scene/SceneRoot'
 import PanelOverlay from './panels/PanelOverlay'
 import HelpButton from './panels/HelpButton'
-import ResetButton from './panels/ResetButton'
 import { DevHud } from './scene/DevTools'
 import { OVERVIEW_CAMERA } from './types/sections'
 
@@ -63,8 +62,6 @@ export default function App() {
         <PanelOverlay />
         {/* ヘルプボタン: 左下に固定表示 */}
         <HelpButton />
-        {/* リセットボタン: ヘルプボタンの上に表示 */}
-        <ResetButton />
         {/* 開発環境のみ: カメラ座標 HUD */}
         <DevHud />
       </div>

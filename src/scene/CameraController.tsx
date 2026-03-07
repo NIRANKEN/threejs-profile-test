@@ -165,8 +165,6 @@ export default function CameraController() {
       maxPolarAngle={2.09}
       // ── 境界の反発係数 ──────────────────────────────────────────────────────
       boundaryFriction={0.15}
-      // カメラ自身を境界ボックス内に収める (壁抜け防止 & NaN 対策)
-      boundaryEnclosesCamera={true}
       // ── ズームをカーソル位置に向かうようにする ───────────────────────────
       dollyToCursor
       // ── 操作制限 ──────────────────────────────────────────────────────────
