@@ -15,9 +15,4 @@ Currently, two official plugins are available:
 
 このリポジトリでは常に最新のパッケージを試用するため、定期的に更新を行っています。
 
-現在の主要パッケージのバージョン:
-- React: 19.2.4
-- Three.js: 0.183.2
-- @react-three/fiber: 9.5.0
-- @react-three/drei: 10.7.7
-- Vite: 7.3.1
+現在の主要パッケージのバージョンについては、 [package.json](./package.json) を参照してください。
