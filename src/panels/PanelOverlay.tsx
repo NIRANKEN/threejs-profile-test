@@ -17,18 +17,22 @@ const PANEL_MAP: Record<SectionId, ComponentType> = {
 export default function PanelOverlay() {
   const activeSection = usePortfolioStore((s) => s.activeSection)
   const isTransitioning = usePortfolioStore((s) => s.isTransitioning)
+  const isHelpOpen = usePortfolioStore((s) => s.isHelpOpen)
   const setActiveSection = usePortfolioStore((s) => s.setActiveSection)
 
   // ESCキーでパネルを閉じる
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
+      // ヘルプが開いている場合は、そちらのEscape処理を優先するため、ここでは何もしない
+      if (isHelpOpen) return
+
       if (e.key === 'Escape' && activeSection !== null && !isTransitioning) {
         setActiveSection(null)
       }
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [activeSection, isTransitioning, setActiveSection])
+  }, [activeSection, isTransitioning, isHelpOpen, setActiveSection])
 
   const isVisible = activeSection !== null
   const ActivePanel = activeSection ? PANEL_MAP[activeSection] : null
