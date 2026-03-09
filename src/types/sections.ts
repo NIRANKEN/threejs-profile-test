@@ -17,12 +17,12 @@ export interface CameraPosition {
 /**
  * 概観カメラ: 部屋の内側中央付近から室内全体を見渡す初期位置。
  * Canvas の camera.position と合わせること。
- *   position: 部屋中央・手前 (z=1.5)、目線の高さ (y=1.6)
+ *   position: 部屋中央・手前 (z=1.5)、目線の高さ (y=2.0)
  *   target:   部屋の中心やや奥を注視
  */
 export const OVERVIEW_CAMERA: CameraPosition = {
-  position: [0, 1.6, 1.5],
-  target: [0, 1.6, 0],
+  position: [0, 2.0, 1.5],
+  target: [0, 2.0, 0],
 }
 
 export const SECTION_CAMERAS: Record<SectionId, CameraPosition> = {
