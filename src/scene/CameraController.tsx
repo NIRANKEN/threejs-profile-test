@@ -1,5 +1,5 @@
 import { useRef, useEffect } from 'react'
-import { Box3, Vector3 } from 'three'
+import { Vector3 } from 'three'
 import { CameraControls } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 import type CameraControlsImpl from 'camera-controls'
@@ -7,16 +7,14 @@ import { usePortfolioStore } from '../store/usePortfolioStore'
 import { OVERVIEW_CAMERA, SECTION_CAMERAS } from '../types/sections'
 
 // ─── カメラ制約定数 ────────────────────────────────────────────────────────────
+const EYE_HEIGHT = 1.6
+
+// フレーム毎に再利用するワーキングベクトル（アロケーション削減）
 const POS_VEC = new Vector3()
 const TGT_VEC = new Vector3()
-
-/**
- * カメラターゲットの境界ボックス
- */
-const ROOM_BOUNDARY = new Box3(
-  new Vector3(-2.3, 0.0, -2.1),
-  new Vector3( 2.3, 3.2,  2.1),
-)
+const FORWARD_H = new Vector3() // 水平方向の前進ベクトル
+const RIGHT_H = new Vector3()   // 水平方向の右ベクトル
+const WORLD_UP = new Vector3(0, 1, 0)
 
 // 移動可能な床エリアの判定 (カメラ位置の制限)
 const isPositionInWalkingArea = (x: number, z: number) => {
@@ -32,6 +30,21 @@ const isPositionInWalkingArea = (x: number, z: number) => {
   return true
 }
 
+// 歩行エリア外に出た場合に押し戻す
+const clampToWalkingArea = (pos: Vector3) => {
+  pos.x = Math.max(-2.1, Math.min(2.1, pos.x))
+  pos.z = Math.max(-1.9, Math.min(1.7, pos.z))
+
+  if (pos.x > 0.4 && pos.z > 0.0) {
+    if (pos.x - 0.4 < pos.z - 0.0) pos.x = 0.4
+    else pos.z = 0.0
+  }
+  if (pos.x < -0.4 && pos.z < -0.4) {
+    if (-0.4 - pos.x < -0.4 - pos.z) pos.x = -0.4
+    else pos.z = -0.4
+  }
+}
+
 export default function CameraController() {
   const ref = useRef<CameraControlsImpl>(null)
   const activeSection = usePortfolioStore((s) => s.activeSection)
@@ -39,6 +52,9 @@ export default function CameraController() {
   const setTransitioning = usePortfolioStore((s) => s.setTransitioning)
   const isTransitioning = usePortfolioStore((s) => s.isTransitioning)
   const isFirstMount = useRef(true)
+
+  // 真上/真下を向いたときのために最後の水平前進方向を記憶する
+  const lastForwardH = useRef(new Vector3(0, 0, -1))
 
   // キー入力状態を管理
   const keys = useRef<{ [key: string]: boolean }>({})
@@ -54,12 +70,9 @@ export default function CameraController() {
     }
   }, [])
 
-  // CameraControlsのrefをstoreに登録 + 境界ボックスを設定
+  // CameraControlsのrefをstoreに登録
   useEffect(() => {
     setCameraControlsRef(ref)
-    const controls = ref.current
-    if (!controls) return
-    controls.setBoundary(ROOM_BOUNDARY)
   }, [setCameraControlsRef])
 
   // WASD移動制御
@@ -67,52 +80,68 @@ export default function CameraController() {
     const controls = ref.current
     if (!controls || activeSection || isTransitioning) return
 
+    const isW = keys.current['KeyW']
+    const isS = keys.current['KeyS']
+    const isA = keys.current['KeyA']
+    const isD = keys.current['KeyD']
+
+    if (!isW && !isS && !isA && !isD) return
+
+    controls.getPosition(POS_VEC)
+    controls.getTarget(TGT_VEC)
+
+    // ── 水平移動ベクトルを計算 ────────────────────────────────────────────────
+    // controls.forward() は3Dの視線方向に移動するため、上を向いたとき水平成分が
+    // ゼロに近づき NaN が発生する。代わりに視線方向を XZ 平面に投影して正規化する。
+    FORWARD_H.subVectors(TGT_VEC, POS_VEC)
+    FORWARD_H.y = 0
+    const forwardLen = FORWARD_H.length()
+    if (forwardLen > 0.001) {
+      FORWARD_H.divideScalar(forwardLen)
+      lastForwardH.current.copy(FORWARD_H)
+    } else {
+      // ほぼ真上/真下を向いている場合は最後に記録した水平方向を使用
+      FORWARD_H.copy(lastForwardH.current)
+    }
+
+    // 右ベクトル = 前進 × 上 (正規化済み FORWARD_H を使用)
+    RIGHT_H.crossVectors(FORWARD_H, WORLD_UP).normalize()
+
+    // ── 水平方向への移動量を算出 ─────────────────────────────────────────────
     const moveSpeed = 3.0 * delta
-    let hasMoved = false
+    let dx = 0
+    let dz = 0
+    if (isW) { dx += FORWARD_H.x * moveSpeed; dz += FORWARD_H.z * moveSpeed }
+    if (isS) { dx -= FORWARD_H.x * moveSpeed; dz -= FORWARD_H.z * moveSpeed }
+    if (isA) { dx -= RIGHT_H.x * moveSpeed; dz -= RIGHT_H.z * moveSpeed }
+    if (isD) { dx += RIGHT_H.x * moveSpeed; dz += RIGHT_H.z * moveSpeed }
 
-    if (keys.current['KeyW']) {
-      controls.forward(moveSpeed, false)
-      hasMoved = true
+    // ── 衝突判定と押し戻し ───────────────────────────────────────────────────
+    const oldPosX = POS_VEC.x
+    const oldPosZ = POS_VEC.z
+    let newPosX = oldPosX + dx
+    let newPosZ = oldPosZ + dz
+
+    if (!isPositionInWalkingArea(newPosX, newPosZ)) {
+      POS_VEC.set(newPosX, EYE_HEIGHT, newPosZ)
+      clampToWalkingArea(POS_VEC)
+      newPosX = POS_VEC.x
+      newPosZ = POS_VEC.z
     }
-    if (keys.current['KeyS']) {
-      controls.forward(-moveSpeed, false)
-      hasMoved = true
-    }
-    if (keys.current['KeyA']) {
-      controls.truck(-moveSpeed, 0, false)
-      hasMoved = true
-    }
-    if (keys.current['KeyD']) {
-      controls.truck(moveSpeed, 0, false)
-      hasMoved = true
-    }
 
-    if (hasMoved) {
-      controls.getPosition(POS_VEC)
-      controls.getTarget(TGT_VEC)
+    // ── ターゲットを実際の移動量だけオフセット ───────────────────────────────
+    // 衝突で位置がクランプされた場合、ターゲットも同じ量だけ動かすことで
+    // カメラの向きが急変しない（カメラブレ防止）。
+    // 位置の Y は常に EYE_HEIGHT に固定し、ターゲットの Y はそのまま維持する
+    // ことで上下の視線角度も保持される。
+    const actualDx = newPosX - oldPosX
+    const actualDz = newPosZ - oldPosZ
 
-      // 高さ(Y)を一定に固定 (1.6m 程度の目線)
-      const yDiff = 1.6 - POS_VEC.y
-      POS_VEC.y = 1.6
-      TGT_VEC.y += yDiff
-
-      // 移動制限エリア外に出ようとした場合は押し戻す
-      if (!isPositionInWalkingArea(POS_VEC.x, POS_VEC.z)) {
-        POS_VEC.x = Math.max(-2.1, Math.min(2.1, POS_VEC.x))
-        POS_VEC.z = Math.max(-1.9, Math.min(1.7, POS_VEC.z))
-
-        if (POS_VEC.x > 0.4 && POS_VEC.z > 0.0) {
-          if (POS_VEC.x - 0.4 < POS_VEC.z - 0.0) POS_VEC.x = 0.4
-          else POS_VEC.z = 0.0
-        }
-        if (POS_VEC.x < -0.4 && POS_VEC.z < -0.4) {
-          if (-0.4 - POS_VEC.x < -0.4 - POS_VEC.z) POS_VEC.x = -0.4
-          else POS_VEC.z = -0.4
-        }
-      }
-
-      controls.setLookAt(POS_VEC.x, POS_VEC.y, POS_VEC.z, TGT_VEC.x, TGT_VEC.y, TGT_VEC.z, false)
-    }
+    controls.setLookAt(
+      newPosX, EYE_HEIGHT, newPosZ,
+      TGT_VEC.x + actualDx, TGT_VEC.y, TGT_VEC.z + actualDz,
+      false,
+    )
   })
 
   // アクティブセクション変更時にカメラをスムーズに移動
@@ -154,31 +183,26 @@ export default function CameraController() {
       makeDefault
       smoothTime={0.6}
       // ── ズーム制限 (室内スケール基準) ────────────────────────────────────────
-      // ターゲットからの最小距離
       minDistance={0.1}
-      // ターゲットからの最大距離
       maxDistance={3.0}
       // ── 縦方向の角度制限 ────────────────────────────────────────────────────
       // 天頂方向: 30° (0.52 rad)
       minPolarAngle={0.52}
       // 天底方向: 120° (2.09 rad)
       maxPolarAngle={2.09}
-      // ── 境界の反発係数 ──────────────────────────────────────────────────────
-      boundaryFriction={0.15}
       // ── ズームをカーソル位置に向かうようにする ───────────────────────────
       dollyToCursor
       // ── 操作制限 ──────────────────────────────────────────────────────────
-      // 右クリックパンを無効化し、左クリック回転のみにする
       mouseButtons={{
-        left: 1, // ACTION.ROTATE
+        left: 1,  // ACTION.ROTATE
         middle: 0, // ACTION.NONE
-        right: 0, // ACTION.NONE
-        wheel: 8, // ACTION.DOLLY
+        right: 0,  // ACTION.NONE
+        wheel: 8,  // ACTION.DOLLY
       }}
       touches={{
-        one: 32, // ACTION.TOUCH_ROTATE
-        two: 512, // ACTION.TOUCH_DOLLY_TRUCK
-        three: 0, // ACTION.NONE
+        one: 32,   // ACTION.TOUCH_ROTATE
+        two: 512,  // ACTION.TOUCH_DOLLY_TRUCK
+        three: 0,  // ACTION.NONE
       }}
     />
   )
