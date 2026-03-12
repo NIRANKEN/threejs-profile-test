@@ -9,16 +9,10 @@
  * 両コンポーネントとも null を返し、フックも実行されない。
  */
 import { useFrame, useThree } from '@react-three/fiber'
-import { Vector3 } from 'three'
-import { usePortfolioStore } from '../store/usePortfolioStore'
-
-// Vector3 を毎フレーム alloc しないよう再利用
-const _tgt = new Vector3()
 
 // ─── Canvas 内コンポーネント ─────────────────────────────────────────────────
 function InnerSceneDevTools() {
   const { camera } = useThree()
-  const cameraControlsRef = usePortfolioStore((s) => s.cameraControlsRef)
 
   useFrame(() => {
     const p = camera.position
@@ -29,18 +23,9 @@ function InnerSceneDevTools() {
       elPos.textContent = `Pos  x:${p.x.toFixed(3)}  y:${p.y.toFixed(3)}  z:${p.z.toFixed(3)}`
     }
 
-    const controls = cameraControlsRef?.current
-    if (!controls) return
-
-    controls.getTarget(_tgt)
-    const elTgt = document.getElementById('dev-cam-tgt')
-    if (elTgt) {
-      elTgt.textContent = `Tgt  x:${_tgt.x.toFixed(3)}  y:${_tgt.y.toFixed(3)}  z:${_tgt.z.toFixed(3)}`
-    }
-
-    const elDst = document.getElementById('dev-cam-dst')
-    if (elDst) {
-      elDst.textContent = `Dst  ${controls.distance.toFixed(3)}`
+    const elRot = document.getElementById('dev-cam-rot')
+    if (elRot) {
+      elRot.textContent = `Rot  yaw:${camera.rotation.y.toFixed(3)}  pitch:${camera.rotation.x.toFixed(3)}`
     }
   })
 
@@ -73,8 +58,7 @@ export function DevHud() {
     <div className="dev-hud" aria-hidden="true">
       <p className="dev-hud__title">📷 Camera Debug</p>
       <p id="dev-cam-pos" className="dev-hud__row">Pos  —</p>
-      <p id="dev-cam-tgt" className="dev-hud__row">Tgt  —</p>
-      <p id="dev-cam-dst" className="dev-hud__row">Dst  —</p>
+      <p id="dev-cam-rot" className="dev-hud__row">Rot  —</p>
       <div className="dev-hud__axes">
         <span style={{ color: '#ff5555' }}>━ X</span>
         <span style={{ color: '#55ff55' }}>━ Y</span>

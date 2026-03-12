@@ -1,7 +1,7 @@
 import { Suspense, Component } from 'react'
 import type { ReactNode } from 'react'
 import { Environment } from '@react-three/drei'
-import CameraController from './CameraController'
+import FirstPersonController from './FirstPersonController'
 import RoomLights from './lights/RoomLights'
 import { RoomModel } from './RoomModel'
 import { SceneDevTools } from './DevTools'
@@ -27,7 +27,7 @@ class SceneErrorBoundary extends Component<
 export default function SceneRoot() {
   return (
     <>
-      <CameraController />
+      <FirstPersonController />
       <RoomLights />
       {/*
         環境マップ (IBL反射): CDNから取得するため失敗しても他に影響しないよう

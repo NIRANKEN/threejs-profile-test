@@ -6,7 +6,7 @@ import PanelOverlay from './panels/PanelOverlay'
 import HelpButton from './panels/HelpButton'
 import ResetButton from './panels/ResetButton'
 import { DevHud } from './scene/DevTools'
-import { OVERVIEW_CAMERA } from './types/sections'
+import { INITIAL_ORIENTATION } from './types/sections'
 
 // ─── Error Boundary ───────────────────────────────────────────────────────────
 interface EBState { error: Error | null }
@@ -80,7 +80,7 @@ export default function App() {
         <Suspense fallback={<LoadingScreen />}>
           <Canvas
             shadows
-            camera={{ fov: 60, near: 0.01, far: 100, position: OVERVIEW_CAMERA.position }}
+            camera={{ fov: 60, near: 0.01, far: 100, position: INITIAL_ORIENTATION.position }}
             gl={{ antialias: true }}
           >
             <SceneRoot />
