@@ -1,33 +1,55 @@
-# R3F Performance Rule
+# R3F Performance Core Rules
 
-React Three Fiber のパフォーマンス低下を防ぐため、以下のルールを厳守すること。
+React Three Fiber (R3F) と React 19 において、アプリケーションのパフォーマンスを最適化し、GPU/CPUの無駄な消費を防ぐための基本原則です。
 
-## 禁止事項
+## 1. フレームループ内の禁止事項
+毎秒60回以上実行される `useFrame` や `useEffect` (連続発火するもの) 内で、以下の操作を絶対に行わないでください。
 
-1. **`useFrame` 内での `useState` 更新は禁止。**
-   - `useFrame` は毎フレーム呼ばれるため、state 更新はレンダリングの連鎖を引き起こし深刻なパフォーマンス低下を招く。
-   - 代わりに `ref` を使って値を直接変更すること。
-
-2. **毎フレームの `Vector3` / `Euler` 等の Math オブジェクト生成は禁止。**
-   - `new Vector3()` などをフレームごとに呼ぶのは GC の原因になる。
-   - コンポーネントのトップレベルや `useMemo` で生成し、Object Pooling を使って再利用すること。
-
-3. **`delta` を使用してFPSに依存しないアニメーションを実装すること。**
-   - `useFrame((state, delta) => { ... })` の `delta` を使い、フレームレートに関わらず一定速度で動くアニメーションにすること。
-
-## 推奨パターン
-
-```tsx
-// NG: 毎フレーム生成
-useFrame((_, delta) => {
-  meshRef.current.position.add(new Vector3(1, 0, 0)); // NG
-  setPosition(pos + delta); // NG: useState 更新
+```typescript
+// ❌ 状態の更新（Reconciliationの原因）
+useFrame(() => {
+  setRotation((prev) => prev + 0.01);
 });
 
-// OK: Object Pooling + ref 使用
-const velocity = useMemo(() => new Vector3(), []);
-useFrame((_, delta) => {
-  velocity.set(delta, 0, 0);
-  meshRef.current.position.add(velocity); // OK
+// ❌ 参照型の再生成（GCのスパイク・DoSの原因）
+useFrame(() => {
+  const target = new THREE.Vector3(); // 毎フレーム作成してはいけない
+  mesh.position.lerp(target, 0.1);
 });
 ```
+
+### ✅ 正しいアプローチ（ミューテーション）
+```typescript
+const target = new THREE.Vector3(); // ループ外でインスタンスを作成
+
+useFrame((state, delta) => {
+  // refを介して直接ミューテーションを行う
+  if (mesh.current) {
+    mesh.current.rotation.y += delta;
+  }
+});
+```
+
+## 2. オブジェクトとマテリアルのキャッシング
+不要なGPUへのアップロードやメモリの圧迫を防ぐため、Geometry と Material は可能な限り再利用します。
+特にインラインでの定義はReactによって毎回破棄・再生成されるため避けてください。
+
+```typescript
+// ❌ リレンダリングごとに破棄・構築される
+<mesh>
+  <boxGeometry />
+  <meshStandardMaterial color="blue" />
+</mesh>
+
+// ✅ useMemoによるキャッシング、またはファイル上部での使い回し
+const boxGeo = useMemo(() => new THREE.BoxGeometry(), []);
+const blueMat = useMemo(() => new THREE.MeshStandardMaterial({ color: "blue" }), []);
+// 
+<mesh geometry={boxGeo} material={blueMat} />
+```
+
+## 3. ドローコールの削減
+同じオブジェクト（木、岩、敵など）を複数描画する場合は、常に `InstancedMesh` または `BatchedMesh` の使用を検討してください。`mesh`を`map`関数で大量にループさせることは深刻なパフォーマンス低下を招きます。
+
+## 4. イベント駆動のレンダリング
+シーン内のアニメーションが必要ない場合は、`<Canvas frameloop="demand">` を設定し、`invalidate()` でのみ再描画を行うようにして電力とリソース消費を徹底的に削減します。
