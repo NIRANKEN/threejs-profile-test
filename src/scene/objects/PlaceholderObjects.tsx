@@ -43,7 +43,7 @@ function Walls() {
 // Profile: デスク + 人物（青）
 export function ProfilePlaceholder() {
   return (
-    <InteractiveObject sectionId="profile">
+    <InteractiveObject sectionId="profile" label="Profile" tooltipPosition={[0, 1.5, 0]}>
       <group position={[0, 0, 0]}>
         {/* デスク */}
         <mesh position={[0, 0.3, -1]} castShadow receiveShadow>
@@ -70,7 +70,7 @@ export function ProfilePlaceholder() {
 // Skills: 本棚（緑）
 export function SkillsPlaceholder() {
   return (
-    <InteractiveObject sectionId="skills">
+    <InteractiveObject sectionId="skills" label="Skills" tooltipPosition={[-3, 2.5, -2]}>
       <group position={[-3, 0, -2]}>
         {/* 棚本体 */}
         <mesh position={[0, 1, 0]} castShadow receiveShadow>
@@ -98,7 +98,7 @@ export function SkillsPlaceholder() {
 // Works: PC・モニター（オレンジ）
 export function WorksPlaceholder() {
   return (
-    <InteractiveObject sectionId="works">
+    <InteractiveObject sectionId="works" label="Works" tooltipPosition={[0, 2, -1]}>
       <group position={[0, 0, -1]}>
         {/* モニター */}
         <mesh position={[0, 1.1, -0.8]} castShadow receiveShadow>
@@ -124,7 +124,7 @@ export function WorksPlaceholder() {
 // Contact: ポスター（ピンク）
 export function ContactPlaceholder() {
   return (
-    <InteractiveObject sectionId="contact">
+    <InteractiveObject sectionId="contact" label="Contact" tooltipPosition={[3, 2.5, -2]}>
       <group position={[3, 0, -2]}>
         {/* ポスターフレーム */}
         <mesh position={[0, 1.5, 0]} castShadow receiveShadow>
