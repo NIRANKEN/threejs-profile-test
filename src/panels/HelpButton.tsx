@@ -13,7 +13,7 @@ export default function HelpButton() {
   // ESC で閉じる
   useEffect(() => {
     if (!open) return
-    const handler = (e: KeyboardEvent) => {
+    const handler = (e: KeyboardEvent): void => {
       if (e.key === 'Escape') setOpen(false)
     }
     window.addEventListener('keydown', handler)
@@ -68,6 +68,17 @@ export default function HelpButton() {
             <h3 className="help-section__title">基本操作</h3>
             <ul className="help-list">
               <li className="help-list__item">
+                <span className="help-list__icon">🎮</span>
+                <span>
+                  <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> キーで
+                  <strong>部屋の中を移動</strong>できます
+                </span>
+              </li>
+              <li className="help-list__item">
+                <span className="help-list__icon">🖱️</span>
+                <span><strong>左ドラッグ</strong>で視点（カメラの向き）を操作できます</span>
+              </li>
+              <li className="help-list__item">
                 <span className="help-list__icon">🖱️</span>
                 <span>部屋の中のオブジェクトを<strong>クリック</strong>するとその項目の詳細が表示されます</span>
               </li>
@@ -78,10 +89,6 @@ export default function HelpButton() {
               <li className="help-list__item">
                 <span className="help-list__icon">⌨️</span>
                 <span><kbd>Esc</kbd> キーでもパネルを閉じられます</span>
-              </li>
-              <li className="help-list__item">
-                <span className="help-list__icon">🤚</span>
-                <span>ドラッグ／スクロールでカメラを<strong>自由に回転・ズーム</strong>できます</span>
               </li>
             </ul>
           </section>
