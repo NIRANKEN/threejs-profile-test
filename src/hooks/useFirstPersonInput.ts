@@ -5,7 +5,7 @@ import { useRef, useEffect } from 'react'
  * Set<string> を useRef で保持し、useFrame 内から直接参照できる（再レンダリングなし）。
  * キーは e.code ベース（'KeyW', 'KeyA', 'KeyS', 'KeyD'）でレイアウト非依存。
  */
-export function useFirstPersonInput(): React.MutableRefObject<Set<string>> {
+export function useFirstPersonInput(): React.RefObject<Set<string>> {
   const keysRef = useRef<Set<string>>(new Set())
 
   useEffect(() => {

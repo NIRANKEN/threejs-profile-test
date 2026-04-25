@@ -52,24 +52,24 @@ export const INITIAL_ORIENTATION: CameraOrientation = {
  * 旧 SECTION_CAMERAS の position + target を yaw/pitch に変換して定義。
  */
 export const SECTION_ORIENTATIONS: Record<SectionId, CameraOrientation> = {
-  // Profile: ベッドの足元から頭部方向を見る
+  // Profile: ベッドを見る
   profile: {
-    position: [-1.0, 2.2, -0.36],
-    ...lookAtToYawPitch([-1.0, 2.2, -0.36], [-0.45, 1.9, -0.15]),
+    position: [-1.0, 1.6, -0.36],
+    ...lookAtToYawPitch([-1.0, 1.6, -0.36], [2.31, 0.57, 1.14]),
   },
   // Skills: PCケースの正面から見る
   skills: {
-    position: [-1.4, 1.5, 0.8],
-    ...lookAtToYawPitch([-1.4, 1.5, 0.8], [-1.5, 0.6, -1.6]),
+    position: [-1.4, 1.6, 0.8],
+    ...lookAtToYawPitch([-1.4, 1.6, 0.8], [-1.5, 0.6, -1.6]),
   },
   // Works: モニターの正面から見る
   works: {
-    position: [-1.5, 1.8, 0.5],
-    ...lookAtToYawPitch([-1.5, 1.8, 0.5], [-2.3, 1.4, -1.8]),
+    position: [-1.5, 1.6, 0.5],
+    ...lookAtToYawPitch([-1.5, 1.6, 0.5], [-2.3, 1.4, -1.8]),
   },
   // Contact: 本の正面から見る
   contact: {
-    position: [1.5, 1.8, 0.5],
-    ...lookAtToYawPitch([1.5, 1.8, 0.5], [1.8, 1.1, -1.7]),
+    position: [1.5, 1.6, 0.5],
+    ...lookAtToYawPitch([1.5, 1.6, 0.5], [1.8, 1.1, -1.7]),
   },
 }

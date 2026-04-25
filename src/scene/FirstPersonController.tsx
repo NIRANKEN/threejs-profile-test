@@ -14,7 +14,7 @@ const SNAP_THRESHOLD = 0.01 // この距離以下でスナップ確定
 const ROOM_BOUNDS = {
   xMin: -2.8, xMax: 2.8,
   yFixed: 1.6, // 目線高さ固定（飛行・落下なし）
-  zMin: -2.8, zMax: 2.3,
+  zMin: -2.0, zMax: 2.0,
 } as const
 
 // ─── GC 対策: モジュールスコープで事前確保（useFrame 内で new しない）──────

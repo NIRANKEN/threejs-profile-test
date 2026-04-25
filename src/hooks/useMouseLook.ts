@@ -5,8 +5,8 @@ const PITCH_MAX = (70 * Math.PI) / 180 // 70° in radians
 const MAX_DELTA_PER_EVENT = (30 * Math.PI) / 180 // 30° クランプ（1イベントあたりの最大回転量）
 
 export interface MouseLookResult {
-  yawRef: React.MutableRefObject<number>
-  pitchRef: React.MutableRefObject<number>
+  yawRef: React.RefObject<number>
+  pitchRef: React.RefObject<number>
 }
 
 /**

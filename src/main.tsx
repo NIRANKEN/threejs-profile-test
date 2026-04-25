@@ -6,7 +6,7 @@ import App from './App'
 // Dev モード限定: Playwright E2E テストからストアを操作できるようにウィンドウに公開
 if (import.meta.env.DEV) {
   import('./store/usePortfolioStore').then(({ usePortfolioStore }) => {
-    ;(window as Window & { __portfolioStore: typeof usePortfolioStore }).__portfolioStore =
+    ;(window as unknown as { __portfolioStore: typeof usePortfolioStore }).__portfolioStore =
       usePortfolioStore
   })
 }
