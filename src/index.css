@@ -24,6 +24,43 @@ body {
   background-color: #0f0f14;
 }
 
+/* ===== Tooltip for 3D Objects ===== */
+.tooltip-container {
+  background: rgba(10, 10, 18, 0.88);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 0.4rem 0.8rem;
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 600;
+  pointer-events: none; /* Let clicks pass through to 3D object */
+  opacity: 0;
+  transform: translateY(10px) scale(0.9);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  white-space: nowrap;
+}
+
+.tooltip-container--visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.tooltip-hidden-btn {
+  /* Visually hidden but accessible to screen readers */
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+  pointer-events: auto; /* Needs to be focusable via Tab */
+}
+
 /* ===== Panel Overlay ===== */
 /* Canvasの前面にfixedで重ねる透明レイヤー */
 .panel-overlay {
