@@ -30,22 +30,19 @@ export default function SceneRoot() {
       <FirstPersonController />
       <RoomLights />
       {/*
-        環境マップ (IBL反射): CDNから取得するため失敗しても他に影響しないよう
-        SceneErrorBoundary + Suspense で保護する
+        Environment・RoomModel・BakeShadows を同じ Suspense に入れる理由:
+        - 別々の境界にすると room.glb が先に解決し、IBL なしのモデルが一瞬描画される
+        - SceneErrorBoundary を Environment だけに内包することで
+          CDN 失敗時は Environment のみ null になり、RoomModel は必ず表示される
+        - BakeShadows は全アセット解決後にシャドウを焼き付けられる
       */}
-      <SceneErrorBoundary>
-        <Suspense fallback={null}>
+      <Suspense fallback={null}>
+        <SceneErrorBoundary>
           <Environment preset="apartment" />
-        </Suspense>
-      </SceneErrorBoundary>
-      <RoomModel />
-      {/*
-        パフォーマンス最適化:
-        シーン内に動的に動く影のキャスター（キャラクターや動くライトなど）が存在しないため、
-        BakeShadows を追加することで影の計算を初回のみに制限し、
-        毎フレームのシャドウマップの再レンダリング（ドローコールの無駄）を削減する。
-      */}
-      <BakeShadows />
+        </SceneErrorBoundary>
+        <RoomModel />
+        <BakeShadows />
+      </Suspense>
       {/* 開発環境のみ: XYZ軸 + カメラ座標ログ */}
       <SceneDevTools />
     </>
