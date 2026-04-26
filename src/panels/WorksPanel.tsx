@@ -1,21 +1,21 @@
 const WORKS = [
   {
-    title: "Project Alpha",
-    description: "React + Three.js で作ったインタラクティブな3Dビジュアライゼーション。",
-    tags: ["React", "Three.js"],
-    url: "https://github.com",
+    title: "いくつかの3D Web開発案件に参画",
+    description: "React + Three.js などを利用したいくつかのアプリ開発経験(建築系や3Dアノテーションなど)",
+    tags: ["React", "Typescript", "Node.js", "Three.js", "React Three Fiber", "Playwright"],
+    url: "https://prtimes.jp/main/html/rd/p/000000095.000031224.html",
   },
   {
-    title: "Project Beta",
-    description: "フルスタックWebアプリ。リアルタイム機能を実装。",
-    tags: ["Node.js", "TypeScript"],
-    url: "https://github.com",
+    title: "旅日記あぷり",
+    description: "Flutterを利用した旅日記アプリの開発 (Android, iOS, Web対応)",
+    tags: ["Flutter", "Dart", "Firebase", "GitHub Actions", "Claude Code", "Jules"],
+    url: "https://purring-fuchsia-f01.notion.site/17a25270305480c287dac6c3e5bf9ce7?v=17a2527030548063b6a7000cb6418115&pvs=74",
   },
   {
-    title: "Project Gamma",
-    description: "Blenderで作成した3DアセットをWebに組み込んだポートフォリオ作品。",
-    tags: ["Blender", "WebGL"],
-    url: "https://github.com",
+    title: "必要に応じてバックエンドもやります",
+    description: "AIを活用したWebアプリのバックエンド開発経験など",
+    tags: ["Go", "MySQL", "AWS"],
+    url: "https://github.com/NIRANKEN",
   },
 ];
 

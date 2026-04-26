@@ -1,7 +1,7 @@
 const SKILLS = [
-  { category: "Frontend", items: ["React", "TypeScript", "Vite"] },
+  { category: "Frontend", items: ["React", "TypeScript", "Vite", "Flutter"] },
   { category: "3D / WebGL", items: ["Three.js", "React Three Fiber", "GLSL"] },
-  { category: "Backend", items: ["Node.js", "Python"] },
+  { category: "Backend", items: ["Node.js", "Go", "Python"] },
   { category: "Tools", items: ["Git", "Figma", "Blender"] },
 ];
 
