@@ -1,13 +1,13 @@
-import { usePortfolioStore } from '../store/usePortfolioStore'
+import { usePortfolioStore } from "../store/usePortfolioStore";
 
 export default function ResetButton() {
-  const setActiveSection = usePortfolioStore((s) => s.setActiveSection)
-  const triggerReset = usePortfolioStore((s) => s.triggerReset)
+  const setActiveSection = usePortfolioStore((s) => s.setActiveSection);
+  const triggerReset = usePortfolioStore((s) => s.triggerReset);
 
   const handleReset = (): void => {
-    setActiveSection(null) // パネルを閉じる
-    triggerReset()         // FirstPersonController にリセット指示
-  }
+    setActiveSection(null); // パネルを閉じる
+    triggerReset(); // FirstPersonController にリセット指示
+  };
 
   return (
     <button
@@ -18,5 +18,5 @@ export default function ResetButton() {
     >
       🏠
     </button>
-  )
+  );
 }

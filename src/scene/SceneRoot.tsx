@@ -1,10 +1,10 @@
-import { Suspense, Component } from 'react'
-import type { ReactNode } from 'react'
-import { Environment, BakeShadows } from '@react-three/drei'
-import FirstPersonController from './FirstPersonController'
-import RoomLights from './lights/RoomLights'
-import { RoomModel } from './RoomModel'
-import { SceneDevTools } from './DevTools'
+import { Suspense, Component } from "react";
+import type { ReactNode } from "react";
+import { Environment, BakeShadows } from "@react-three/drei";
+import FirstPersonController from "./FirstPersonController";
+import RoomLights from "./lights/RoomLights";
+import { RoomModel } from "./RoomModel";
+import { SceneDevTools } from "./DevTools";
 
 /**
  * Canvas内用の軽量エラーバウンダリ
@@ -14,13 +14,15 @@ class SceneErrorBoundary extends Component<
   { children: ReactNode; fallback?: ReactNode },
   { hasError: boolean }
 > {
-  state = { hasError: false }
-  static getDerivedStateFromError() { return { hasError: true } }
-  componentDidCatch(e: unknown) { console.warn('[SceneErrorBoundary] caught:', e) }
+  state = { hasError: false };
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  componentDidCatch(e: unknown) {
+    console.warn("[SceneErrorBoundary] caught:", e);
+  }
   render() {
-    return this.state.hasError
-      ? (this.props.fallback ?? null)
-      : this.props.children
+    return this.state.hasError ? (this.props.fallback ?? null) : this.props.children;
   }
 }
 
@@ -46,5 +48,5 @@ export default function SceneRoot() {
       {/* 開発環境のみ: XYZ軸 + カメラ座標ログ */}
       <SceneDevTools />
     </>
-  )
+  );
 }

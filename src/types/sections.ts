@@ -1,4 +1,4 @@
-export type SectionId = 'profile' | 'skills' | 'works' | 'contact'
+export type SectionId = "profile" | "skills" | "works" | "contact";
 
 /**
  * 一人称カメラの姿勢（位置 + Yaw + Pitch）
@@ -6,9 +6,9 @@ export type SectionId = 'profile' | 'skills' | 'works' | 'contact'
  *   pitch: X軸回転（上下）[radians]、±70°以内
  */
 export interface CameraOrientation {
-  position: [number, number, number]
-  yaw: number
-  pitch: number
+  position: [number, number, number];
+  yaw: number;
+  pitch: number;
 }
 
 /**
@@ -28,14 +28,14 @@ function lookAtToYawPitch(
   position: [number, number, number],
   target: [number, number, number],
 ): { yaw: number; pitch: number } {
-  const dx = target[0] - position[0]
-  const dy = target[1] - position[1]
-  const dz = target[2] - position[2]
+  const dx = target[0] - position[0];
+  const dy = target[1] - position[1];
+  const dz = target[2] - position[2];
   // Three.js YXZ: カメラは既定で -Z を向く。右向きが正の yaw
-  const yaw = Math.atan2(-dx, -dz)
-  const dist = Math.sqrt(dx * dx + dz * dz)
-  const pitch = Math.atan2(dy, dist)
-  return { yaw, pitch }
+  const yaw = Math.atan2(-dx, -dz);
+  const dist = Math.sqrt(dx * dx + dz * dz);
+  const pitch = Math.atan2(dy, dist);
+  return { yaw, pitch };
 }
 
 /**
@@ -45,7 +45,7 @@ export const INITIAL_ORIENTATION: CameraOrientation = {
   position: [0, 1.6, 1.5],
   yaw: 0,
   pitch: 0,
-}
+};
 
 /**
  * 各セクション選択時の固定視点。
@@ -72,4 +72,4 @@ export const SECTION_ORIENTATIONS: Record<SectionId, CameraOrientation> = {
     position: [1.5, 1.6, 0.5],
     ...lookAtToYawPitch([1.5, 1.6, 0.5], [1.8, 1.1, -1.7]),
   },
-}
+};

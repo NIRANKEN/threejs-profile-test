@@ -7,17 +7,17 @@
 - WebGL Performance optimization (Draw call reduction, GPU memory management).
 
 - Mathematical transformations (Vectors, Quaternions, Matrices).
- 
+
 - Shader programming (GLSL) and custom materials.
 
 ## 1. R3F Lifecycle & Performance Rules (CRITICAL)
 
 - Avoid Re-renders in Loops: NEVER use useState or setState inside useFrame. Use ref to mutate properties directly.
- 
+
 - Component Granularity: Keep heavy 3D objects in their own components to isolate updates.
- 
+
 - On-Demand Rendering: If the scene is static, ensure the canvas uses frameloop="demand" to save CPU/GPU.
- 
+
 - Reactive vs. Non-Reactive: Only use React state for things that change the scene graph structure. Use refs for everything that happens inside the frame.
 
 ## 2. Resource Management (Memory Leak Prevention)
@@ -27,7 +27,6 @@
 - Asset Loading: Always use useLoader or useGLTF (from drei) to leverage built-in caching.
 
 - Texture Optimization:
-
   - Use compressed formats like WebP or Basis (KTX2).
 
   - Ensure texture dimensions are Power of Two (POT) for older GPU compatibility.
@@ -43,7 +42,6 @@
 ## 4. Animation & Math Best Practices
 
 - Object Pooling: Avoid creating new THREE.Vector3(), THREE.Euler(), or THREE.Color() inside useFrame.
-
   - Pattern: Declare them outside the loop and use .set() or .copy().
 
 - Lerp & Smoothing: Use MathUtils.lerp or drei's useScroll for smooth transitions.

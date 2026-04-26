@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect } from "react";
 
 /**
  * WASD キーの押下状態を追跡するフック。
@@ -6,30 +6,30 @@ import { useRef, useEffect } from 'react'
  * キーは e.code ベース（'KeyW', 'KeyA', 'KeyS', 'KeyD'）でレイアウト非依存。
  */
 export function useFirstPersonInput(): React.RefObject<Set<string>> {
-  const keysRef = useRef<Set<string>>(new Set())
+  const keysRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent): void => {
-      keysRef.current.add(e.code)
-    }
+      keysRef.current.add(e.code);
+    };
     const onKeyUp = (e: KeyboardEvent): void => {
-      keysRef.current.delete(e.code)
-    }
+      keysRef.current.delete(e.code);
+    };
     // タブ非アクティブ時に keyup が発火しないためキーをクリア
     const onBlur = (): void => {
-      keysRef.current.clear()
-    }
+      keysRef.current.clear();
+    };
 
-    window.addEventListener('keydown', onKeyDown)
-    window.addEventListener('keyup', onKeyUp)
-    window.addEventListener('blur', onBlur)
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keyup", onKeyUp);
+    window.addEventListener("blur", onBlur);
 
     return () => {
-      window.removeEventListener('keydown', onKeyDown)
-      window.removeEventListener('keyup', onKeyUp)
-      window.removeEventListener('blur', onBlur)
-    }
-  }, [])
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("keyup", onKeyUp);
+      window.removeEventListener("blur", onBlur);
+    };
+  }, []);
 
-  return keysRef
+  return keysRef;
 }

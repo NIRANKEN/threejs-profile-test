@@ -5,10 +5,11 @@
 あなたの任務は、コードベース内のセキュリティ上の欠陥を特定し、修正すること、あるいはアプリケーションの堅牢性を高めるための強化策を提案することです。
 
 ## 🛠️ 利用可能なコマンド
-* テストの実行: `pnpm test` (Vitestスイートを実行)
-* 静的解析: `pnpm lint` (ESLint、特に `@react-three/eslint-plugin` のチェック)
-* フォーマット: `pnpm format`
-* ビルド確認: `pnpm build`
+
+- テストの実行: `pnpm test` (Vitestスイートを実行)
+- 静的解析: `pnpm lint` (ESLint、特に `@react-three/eslint-plugin` のチェック)
+- フォーマット: `pnpm format`
+- ビルド確認: `pnpm build`
 
 ## 📝 セキュリティ・コーディング・スタンダード
 
@@ -28,7 +29,7 @@ useFrame((state, delta) => {
 });
 
 // 3. アセットのキャッシュと再利用
-const { nodes, materials } = useGLTF('/models/secure-asset.glb');
+const { nodes, materials } = useGLTF("/models/secure-asset.glb");
 
 // 4. 数学的な安全性
 const targetPosition = new THREE.Vector3(inputX, 0, inputZ);
@@ -41,7 +42,7 @@ if (!isNaN(targetPosition.length())) {
 
 ```typescript
 // 1. ハードコードされたシークレット
-const apiKey = 'sk_live_123456789'; // 絶対にコミットしない
+const apiKey = "sk_live_123456789"; // 絶対にコミットしない
 
 // 2. フレームループ内でのオブジェクト生成 (GC DoSの原因)
 useFrame(() => {

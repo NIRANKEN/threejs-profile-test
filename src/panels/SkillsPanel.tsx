@@ -1,9 +1,9 @@
 const SKILLS = [
-  { category: 'Frontend', items: ['React', 'TypeScript', 'Vite'] },
-  { category: '3D / WebGL', items: ['Three.js', 'React Three Fiber', 'GLSL'] },
-  { category: 'Backend', items: ['Node.js', 'Python'] },
-  { category: 'Tools', items: ['Git', 'Figma', 'Blender'] },
-]
+  { category: "Frontend", items: ["React", "TypeScript", "Vite"] },
+  { category: "3D / WebGL", items: ["Three.js", "React Three Fiber", "GLSL"] },
+  { category: "Backend", items: ["Node.js", "Python"] },
+  { category: "Tools", items: ["Git", "Figma", "Blender"] },
+];
 
 export default function SkillsPanel() {
   return (
@@ -24,5 +24,5 @@ export default function SkillsPanel() {
         ))}
       </div>
     </div>
-  )
+  );
 }

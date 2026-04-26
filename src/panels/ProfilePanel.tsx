@@ -2,11 +2,14 @@ export default function ProfilePanel() {
   return (
     <div className="panel-content">
       <h2 className="panel-title">Profile</h2>
-      <div className="panel-avatar" aria-hidden="true">👤</div>
+      <div className="panel-avatar" aria-hidden="true">
+        👤
+      </div>
       <p className="panel-name">Your Name</p>
       <p className="panel-role">Frontend / 3D Developer</p>
       <p className="panel-bio">
-        Web と 3D に興味を持つエンジニアです。<br />
+        Web と 3D に興味を持つエンジニアです。
+        <br />
         React・Three.js を使ったインタラクティブな体験の構築が得意です。
       </p>
       <div className="panel-links">
@@ -18,5 +21,5 @@ export default function ProfilePanel() {
         </a>
       </div>
     </div>
-  )
+  );
 }

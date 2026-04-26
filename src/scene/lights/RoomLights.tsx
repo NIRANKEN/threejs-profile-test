@@ -4,11 +4,11 @@
  */
 
 // ─── 定数 (GC対策: 再レンダリング時の新規配列生成を回避) ──────────────────────
-const HEMI_LIGHT_ARGS = [0xddeeff, 0x0f0e0d, 0.02] as [number, number, number]
-const MAIN_LIGHT_POS = [0, 4, 0] as [number, number, number]
-const SHADOW_MAP_SIZE = [1024, 1024] as [number, number]
-const SIDE_LIGHT_L_POS = [-3, 2.5, 1] as [number, number, number]
-const SIDE_LIGHT_R_POS = [3, 2.5, 1] as [number, number, number]
+const HEMI_LIGHT_ARGS = [0xddeeff, 0x0f0e0d, 0.02] as [number, number, number];
+const MAIN_LIGHT_POS = [0, 4, 0] as [number, number, number];
+const SHADOW_MAP_SIZE = [1024, 1024] as [number, number];
+const SIDE_LIGHT_L_POS = [-3, 2.5, 1] as [number, number, number];
+const SIDE_LIGHT_R_POS = [3, 2.5, 1] as [number, number, number];
 
 export default function RoomLights() {
   return (
@@ -46,5 +46,5 @@ export default function RoomLights() {
         decay={2}
       />
     </>
-  )
+  );
 }
