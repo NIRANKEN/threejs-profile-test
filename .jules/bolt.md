@@ -1,0 +1,1 @@
+## 2024-05-19 - [BakeShadows Optimization] **Learning:** Static scenes benefit heavily from BakeShadows. **Action:** Added BakeShadows when no dynamic lights or moving objects that cast shadows exist.
