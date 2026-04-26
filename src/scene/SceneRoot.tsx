@@ -1,6 +1,6 @@
 import { Suspense, Component } from 'react'
 import type { ReactNode } from 'react'
-import { Environment } from '@react-three/drei'
+import { Environment, BakeShadows } from '@react-three/drei'
 import FirstPersonController from './FirstPersonController'
 import RoomLights from './lights/RoomLights'
 import { RoomModel } from './RoomModel'
@@ -39,6 +39,13 @@ export default function SceneRoot() {
         </Suspense>
       </SceneErrorBoundary>
       <RoomModel />
+      {/*
+        パフォーマンス最適化:
+        シーン内に動的に動く影のキャスター（キャラクターや動くライトなど）が存在しないため、
+        BakeShadows を追加することで影の計算を初回のみに制限し、
+        毎フレームのシャドウマップの再レンダリング（ドローコールの無駄）を削減する。
+      */}
+      <BakeShadows />
       {/* 開発環境のみ: XYZ軸 + カメラ座標ログ */}
       <SceneDevTools />
     </>
