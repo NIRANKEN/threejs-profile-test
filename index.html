@@ -7,11 +7,32 @@
     <title>Portfolio</title>
     <!-- Inline fallback: Reactが起動する前も黒背景を維持 -->
     <style>
-      html, body { margin: 0; padding: 0; background: #0f0f14; }
-      #root { width: 100vw; height: 100vh; }
-      #diag { position:fixed; bottom:0; left:0; right:0; background:#1a0000; color:#ff8888;
-              font:12px monospace; padding:8px; max-height:40vh; overflow:auto;
-              z-index:9999; display:none; white-space:pre-wrap; word-break:break-all; }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: #0f0f14;
+      }
+      #root {
+        width: 100vw;
+        height: 100vh;
+      }
+      #diag {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: #1a0000;
+        color: #ff8888;
+        font: 12px monospace;
+        padding: 8px;
+        max-height: 40vh;
+        overflow: auto;
+        z-index: 9999;
+        display: none;
+        white-space: pre-wrap;
+        word-break: break-all;
+      }
     </style>
   </head>
   <body>
@@ -19,13 +40,20 @@
     <!-- 診断パネル: モジュールエラーをキャッチして画面に表示 -->
     <div id="diag"></div>
     <script>
-      var diag = document.getElementById('diag');
-      function showDiag(msg) { diag.style.display='block'; diag.textContent += msg + '\n---\n'; }
-      window.addEventListener('error', function(e) {
-        showDiag('[JS ERROR] ' + e.message + '\n  at ' + e.filename + ':' + e.lineno + ':' + e.colno);
+      var diag = document.getElementById("diag");
+      function showDiag(msg) {
+        diag.style.display = "block";
+        diag.textContent += msg + "\n---\n";
+      }
+      window.addEventListener("error", function (e) {
+        showDiag(
+          "[JS ERROR] " + e.message + "\n  at " + e.filename + ":" + e.lineno + ":" + e.colno,
+        );
       });
-      window.addEventListener('unhandledrejection', function(e) {
-        showDiag('[UNHANDLED PROMISE] ' + (e.reason && e.reason.stack ? e.reason.stack : String(e.reason)));
+      window.addEventListener("unhandledrejection", function (e) {
+        showDiag(
+          "[UNHANDLED PROMISE] " + (e.reason && e.reason.stack ? e.reason.stack : String(e.reason)),
+        );
       });
     </script>
     <script type="module" src="/src/main.tsx"></script>

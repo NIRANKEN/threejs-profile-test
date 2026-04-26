@@ -1,23 +1,23 @@
 const WORKS = [
   {
-    title: 'Project Alpha',
-    description: 'React + Three.js で作ったインタラクティブな3Dビジュアライゼーション。',
-    tags: ['React', 'Three.js'],
-    url: 'https://github.com',
+    title: "Project Alpha",
+    description: "React + Three.js で作ったインタラクティブな3Dビジュアライゼーション。",
+    tags: ["React", "Three.js"],
+    url: "https://github.com",
   },
   {
-    title: 'Project Beta',
-    description: 'フルスタックWebアプリ。リアルタイム機能を実装。',
-    tags: ['Node.js', 'TypeScript'],
-    url: 'https://github.com',
+    title: "Project Beta",
+    description: "フルスタックWebアプリ。リアルタイム機能を実装。",
+    tags: ["Node.js", "TypeScript"],
+    url: "https://github.com",
   },
   {
-    title: 'Project Gamma',
-    description: 'Blenderで作成した3DアセットをWebに組み込んだポートフォリオ作品。',
-    tags: ['Blender', 'WebGL'],
-    url: 'https://github.com',
+    title: "Project Gamma",
+    description: "Blenderで作成した3DアセットをWebに組み込んだポートフォリオ作品。",
+    tags: ["Blender", "WebGL"],
+    url: "https://github.com",
   },
-]
+];
 
 export default function WorksPanel() {
   return (
@@ -45,5 +45,5 @@ export default function WorksPanel() {
         ))}
       </div>
     </div>
-  )
+  );
 }

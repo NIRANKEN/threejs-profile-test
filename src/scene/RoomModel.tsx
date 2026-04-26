@@ -17,117 +17,116 @@ Manually modified:
       Contact → Book
 */
 
-import type * as THREE from 'three'
-import { useGLTF } from '@react-three/drei'
-import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js'
-import InteractiveObject from './objects/InteractiveObject'
+import type * as THREE from "three";
+import { useGLTF } from "@react-three/drei";
+import type { GLTF } from "three/examples/jsm/loaders/GLTFLoader.js";
+import InteractiveObject from "./objects/InteractiveObject";
 
 type GLTFResult = GLTF & {
   nodes: {
-    Object_4: THREE.Mesh
-    Object_5: THREE.Mesh
-    Object_6: THREE.Mesh
-    Object_7: THREE.Mesh
-    Object_8: THREE.Mesh
-    Object_9: THREE.Mesh
-    Object_10: THREE.Mesh
-    Object_11: THREE.Mesh
-    Object_12: THREE.Mesh
-    Object_13: THREE.Mesh
-    Object_15: THREE.Mesh
-    Object_16: THREE.Mesh
-    Object_17: THREE.Mesh
-    Object_18: THREE.Mesh
-    Object_19: THREE.Mesh
-    Object_20: THREE.Mesh
-    Object_22: THREE.Mesh
-    Object_23: THREE.Mesh
-    Object_25: THREE.Mesh
-    Object_27: THREE.Mesh
-    Object_28: THREE.Mesh
-    Object_30: THREE.Mesh
-    Object_31: THREE.Mesh
-    Object_32: THREE.Mesh
-    Object_33: THREE.Mesh
-    Object_34: THREE.Mesh
-    Object_35: THREE.Mesh
-    Object_36: THREE.Mesh
-    Object_37: THREE.Mesh
-    Object_38: THREE.Mesh
-    Object_39: THREE.Mesh
-    Object_40: THREE.Mesh
-    Object_42: THREE.Mesh
-    Object_43: THREE.Mesh
-    Object_44: THREE.Mesh
-    Object_46: THREE.Mesh
-    Object_47: THREE.Mesh
-    Object_48: THREE.Mesh
-    Object_50: THREE.Mesh
-    Object_51: THREE.Mesh
-    Object_53: THREE.Mesh
-    Object_54: THREE.Mesh
-    Object_56: THREE.Mesh
-    Object_57: THREE.Mesh
-    Object_58: THREE.Mesh
-    Object_59: THREE.Mesh
-    Object_60: THREE.Mesh
-    Object_61: THREE.Mesh
-    Object_63: THREE.Mesh
-    Object_64: THREE.Mesh
-    Object_65: THREE.Mesh
-    Object_66: THREE.Mesh
-    Object_68: THREE.Mesh
-    Object_69: THREE.Mesh
-  }
+    Object_4: THREE.Mesh;
+    Object_5: THREE.Mesh;
+    Object_6: THREE.Mesh;
+    Object_7: THREE.Mesh;
+    Object_8: THREE.Mesh;
+    Object_9: THREE.Mesh;
+    Object_10: THREE.Mesh;
+    Object_11: THREE.Mesh;
+    Object_12: THREE.Mesh;
+    Object_13: THREE.Mesh;
+    Object_15: THREE.Mesh;
+    Object_16: THREE.Mesh;
+    Object_17: THREE.Mesh;
+    Object_18: THREE.Mesh;
+    Object_19: THREE.Mesh;
+    Object_20: THREE.Mesh;
+    Object_22: THREE.Mesh;
+    Object_23: THREE.Mesh;
+    Object_25: THREE.Mesh;
+    Object_27: THREE.Mesh;
+    Object_28: THREE.Mesh;
+    Object_30: THREE.Mesh;
+    Object_31: THREE.Mesh;
+    Object_32: THREE.Mesh;
+    Object_33: THREE.Mesh;
+    Object_34: THREE.Mesh;
+    Object_35: THREE.Mesh;
+    Object_36: THREE.Mesh;
+    Object_37: THREE.Mesh;
+    Object_38: THREE.Mesh;
+    Object_39: THREE.Mesh;
+    Object_40: THREE.Mesh;
+    Object_42: THREE.Mesh;
+    Object_43: THREE.Mesh;
+    Object_44: THREE.Mesh;
+    Object_46: THREE.Mesh;
+    Object_47: THREE.Mesh;
+    Object_48: THREE.Mesh;
+    Object_50: THREE.Mesh;
+    Object_51: THREE.Mesh;
+    Object_53: THREE.Mesh;
+    Object_54: THREE.Mesh;
+    Object_56: THREE.Mesh;
+    Object_57: THREE.Mesh;
+    Object_58: THREE.Mesh;
+    Object_59: THREE.Mesh;
+    Object_60: THREE.Mesh;
+    Object_61: THREE.Mesh;
+    Object_63: THREE.Mesh;
+    Object_64: THREE.Mesh;
+    Object_65: THREE.Mesh;
+    Object_66: THREE.Mesh;
+    Object_68: THREE.Mesh;
+    Object_69: THREE.Mesh;
+  };
   materials: {
-    Baseboard: THREE.MeshStandardMaterial
-    Ceiling: THREE.MeshStandardMaterial
-    Floor: THREE.MeshStandardMaterial
-    Wall: THREE.MeshStandardMaterial
-    LightSwitch: THREE.MeshStandardMaterial
-    DoorHandle: THREE.MeshStandardMaterial
-    Door: THREE.MeshStandardMaterial
-    Planks: THREE.MeshStandardMaterial
-    Hole: THREE.MeshStandardMaterial
-    Glass: THREE.MeshStandardMaterial
-    Pillow: THREE.MeshStandardMaterial
-    Wood1: THREE.MeshStandardMaterial
-    Bedsheets: THREE.MeshStandardMaterial
-    Blanket: THREE.MeshStandardMaterial
-    InsideBlanket: THREE.MeshStandardMaterial
-    BedHead: THREE.MeshStandardMaterial
-    Wood2: THREE.MeshStandardMaterial
-    Chair: THREE.MeshStandardMaterial
-    Plastic: THREE.MeshStandardMaterial
-    Case: THREE.MeshStandardMaterial
-    Case2: THREE.MeshStandardMaterial
-    Fans: THREE.MeshStandardMaterial
-    material: THREE.MeshStandardMaterial
-    Motherboard: THREE.MeshStandardMaterial
-    BlueLight: THREE.MeshStandardMaterial
-    PurpleLight: THREE.MeshStandardMaterial
-    Nanoleaf: THREE.MeshStandardMaterial
-    Plug: THREE.MeshStandardMaterial
-    Metal: THREE.MeshStandardMaterial
-    Monitor: THREE.MeshStandardMaterial
-    Cable: THREE.MeshStandardMaterial
-    Keyboard: THREE.MeshStandardMaterial
-    Keycaps: THREE.MeshStandardMaterial
-    Mousepad: THREE.MeshStandardMaterial
-    Mouse: THREE.MeshStandardMaterial
-    LightBulbBase: THREE.MeshStandardMaterial
-    BookCover: THREE.MeshStandardMaterial
-    Pages: THREE.MeshStandardMaterial
-  }
-}
+    Baseboard: THREE.MeshStandardMaterial;
+    Ceiling: THREE.MeshStandardMaterial;
+    Floor: THREE.MeshStandardMaterial;
+    Wall: THREE.MeshStandardMaterial;
+    LightSwitch: THREE.MeshStandardMaterial;
+    DoorHandle: THREE.MeshStandardMaterial;
+    Door: THREE.MeshStandardMaterial;
+    Planks: THREE.MeshStandardMaterial;
+    Hole: THREE.MeshStandardMaterial;
+    Glass: THREE.MeshStandardMaterial;
+    Pillow: THREE.MeshStandardMaterial;
+    Wood1: THREE.MeshStandardMaterial;
+    Bedsheets: THREE.MeshStandardMaterial;
+    Blanket: THREE.MeshStandardMaterial;
+    InsideBlanket: THREE.MeshStandardMaterial;
+    BedHead: THREE.MeshStandardMaterial;
+    Wood2: THREE.MeshStandardMaterial;
+    Chair: THREE.MeshStandardMaterial;
+    Plastic: THREE.MeshStandardMaterial;
+    Case: THREE.MeshStandardMaterial;
+    Case2: THREE.MeshStandardMaterial;
+    Fans: THREE.MeshStandardMaterial;
+    material: THREE.MeshStandardMaterial;
+    Motherboard: THREE.MeshStandardMaterial;
+    BlueLight: THREE.MeshStandardMaterial;
+    PurpleLight: THREE.MeshStandardMaterial;
+    Nanoleaf: THREE.MeshStandardMaterial;
+    Plug: THREE.MeshStandardMaterial;
+    Metal: THREE.MeshStandardMaterial;
+    Monitor: THREE.MeshStandardMaterial;
+    Cable: THREE.MeshStandardMaterial;
+    Keyboard: THREE.MeshStandardMaterial;
+    Keycaps: THREE.MeshStandardMaterial;
+    Mousepad: THREE.MeshStandardMaterial;
+    Mouse: THREE.MeshStandardMaterial;
+    LightBulbBase: THREE.MeshStandardMaterial;
+    BookCover: THREE.MeshStandardMaterial;
+    Pages: THREE.MeshStandardMaterial;
+  };
+};
 
 export function RoomModel() {
-  const { nodes, materials } = useGLTF('/models/room.glb') as unknown as GLTFResult
+  const { nodes, materials } = useGLTF("/models/room.glb") as unknown as GLTFResult;
   return (
     <group dispose={null}>
       <group rotation={[-Math.PI / 2, 0, 0]} scale={0.913}>
         <group rotation={[Math.PI / 2, 0, 0]}>
-
           {/* ── 部屋の構造（非インタラクティブ）── */}
           <group rotation={[0, -Math.PI / 2, 0]}>
             <mesh geometry={nodes.Object_4.geometry} material={materials.Baseboard} />
@@ -244,11 +243,10 @@ export function RoomModel() {
               <mesh geometry={nodes.Object_69.geometry} material={materials.Pages} />
             </group>
           </InteractiveObject>
-
         </group>
       </group>
     </group>
-  )
+  );
 }
 
-useGLTF.preload('/models/room.glb')
+useGLTF.preload("/models/room.glb");

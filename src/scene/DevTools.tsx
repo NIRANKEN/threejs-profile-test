@@ -8,26 +8,26 @@
  * import.meta.env.DEV が false の本番ビルドでは
  * 両コンポーネントとも null を返し、フックも実行されない。
  */
-import { useFrame, useThree } from '@react-three/fiber'
+import { useFrame, useThree } from "@react-three/fiber";
 
 // ─── Canvas 内コンポーネント ─────────────────────────────────────────────────
 function InnerSceneDevTools() {
-  const { camera } = useThree()
+  const { camera } = useThree();
 
   useFrame(() => {
-    const p = camera.position
+    const p = camera.position;
 
     // React の state を介さず DOM を直接更新（毎フレームの再レンダーを回避）
-    const elPos = document.getElementById('dev-cam-pos')
+    const elPos = document.getElementById("dev-cam-pos");
     if (elPos) {
-      elPos.textContent = `Pos  x:${p.x.toFixed(3)}  y:${p.y.toFixed(3)}  z:${p.z.toFixed(3)}`
+      elPos.textContent = `Pos  x:${p.x.toFixed(3)}  y:${p.y.toFixed(3)}  z:${p.z.toFixed(3)}`;
     }
 
-    const elRot = document.getElementById('dev-cam-rot')
+    const elRot = document.getElementById("dev-cam-rot");
     if (elRot) {
-      elRot.textContent = `Rot  yaw:${camera.rotation.y.toFixed(3)}  pitch:${camera.rotation.x.toFixed(3)}`
+      elRot.textContent = `Rot  yaw:${camera.rotation.y.toFixed(3)}  pitch:${camera.rotation.x.toFixed(3)}`;
     }
-  })
+  });
 
   return (
     <>
@@ -40,30 +40,34 @@ function InnerSceneDevTools() {
       */}
       <axesHelper args={[1.5]} />
     </>
-  )
+  );
 }
 
 /** 開発環境のみ Scene に追加するカメラデバッグツール */
 export function SceneDevTools() {
-  if (!import.meta.env.DEV) return null
-  return <InnerSceneDevTools />
+  if (!import.meta.env.DEV) return null;
+  return <InnerSceneDevTools />;
 }
 
 // ─── Canvas 外 HTML オーバーレイ ─────────────────────────────────────────────
 /** 開発環境のみ表示するカメラ座標 HUD */
 export function DevHud() {
-  if (!import.meta.env.DEV) return null
+  if (!import.meta.env.DEV) return null;
 
   return (
     <div className="dev-hud" aria-hidden="true">
       <p className="dev-hud__title">📷 Camera Debug</p>
-      <p id="dev-cam-pos" className="dev-hud__row">Pos  —</p>
-      <p id="dev-cam-rot" className="dev-hud__row">Rot  —</p>
+      <p id="dev-cam-pos" className="dev-hud__row">
+        Pos —
+      </p>
+      <p id="dev-cam-rot" className="dev-hud__row">
+        Rot —
+      </p>
       <div className="dev-hud__axes">
-        <span style={{ color: '#ff5555' }}>━ X</span>
-        <span style={{ color: '#55ff55' }}>━ Y</span>
-        <span style={{ color: '#5599ff' }}>━ Z</span>
+        <span style={{ color: "#ff5555" }}>━ X</span>
+        <span style={{ color: "#55ff55" }}>━ Y</span>
+        <span style={{ color: "#5599ff" }}>━ Z</span>
       </div>
     </div>
-  )
+  );
 }
