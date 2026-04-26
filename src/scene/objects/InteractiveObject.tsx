@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef, useMemo } from 'react'
+import { useEffect, useRef, useMemo } from 'react'
 import type { ReactNode } from 'react'
 import * as THREE from 'three'
+import { useFrame } from '@react-three/fiber'
 import type { ThreeEvent } from '@react-three/fiber'
 import { usePortfolioStore } from '../../store/usePortfolioStore'
 import type { SectionId } from '../../types/sections'
@@ -11,7 +12,7 @@ interface Props {
 }
 
 export default function InteractiveObject({ sectionId, children }: Props) {
-  const [hovered, setHovered] = useState(false)
+  const hoveredRef = useRef(false)
   const groupRef = useRef<THREE.Group>(null)
   const highlightGroupRef = useRef<THREE.Group>(null)
   const activeSection = usePortfolioStore((s) => s.activeSection)
@@ -25,11 +26,6 @@ export default function InteractiveObject({ sectionId, children }: Props) {
     }
   }, [])
 
-  // ホバー状態でカーソルを変更
-  useEffect(() => {
-    document.body.style.cursor = hovered ? 'pointer' : 'auto'
-  }, [hovered])
-
   // ハイライト用マテリアル
   const highlightMaterial = useMemo(() => {
     return new THREE.MeshBasicMaterial({
@@ -41,29 +37,38 @@ export default function InteractiveObject({ sectionId, children }: Props) {
     })
   }, [])
 
-  // ホバー状態に応じてハイライトメッシュを生成・破棄
+  useEffect(() => {
+    return () => {
+      highlightMaterial.dispose()
+    }
+  }, [highlightMaterial])
+
+  // マウント時に一度だけクローンを生成（ホバーのたびに生成しない）
   useEffect(() => {
     if (!groupRef.current || !highlightGroupRef.current) return
-
-    if (hovered) {
-      // グループ全体をクローンして階層構造を保つ
-      const clonedGroup = groupRef.current.clone()
-
-      clonedGroup.traverse((node) => {
-        if (node instanceof THREE.Mesh) {
-          node.material = highlightMaterial
-          node.scale.multiplyScalar(1.02)
-        }
-      })
-      highlightGroupRef.current.add(clonedGroup)
-      return () => {
-        // クリーンアップ: ハイライトメッシュを削除
-        if (highlightGroupRef.current) {
-          highlightGroupRef.current.clear()
-        }
+    const highlightGroup = highlightGroupRef.current
+    const cloned = groupRef.current.clone()
+    cloned.traverse((node) => {
+      if (node instanceof THREE.Mesh) {
+        node.material = highlightMaterial
+        node.scale.multiplyScalar(1.02)
+        // ハイライトメッシュ自身がポインターイベントを受けないようにする
+        node.raycast = () => {}
       }
+    })
+    highlightGroup.add(cloned)
+    highlightGroup.visible = false
+    return () => {
+      highlightGroup.clear()
     }
-  }, [hovered, highlightMaterial])
+  }, [highlightMaterial])
+
+  // Reactの再レンダリングを避け、useFrameでvisibilityを直接制御
+  useFrame(() => {
+    if (highlightGroupRef.current) {
+      highlightGroupRef.current.visible = hoveredRef.current
+    }
+  })
 
   function handleClick(e: ThreeEvent<MouseEvent>) {
     e.stopPropagation()
@@ -74,11 +79,15 @@ export default function InteractiveObject({ sectionId, children }: Props) {
 
   function handlePointerOver(e: ThreeEvent<PointerEvent>) {
     e.stopPropagation()
-    setHovered(true)
+    if (!hoveredRef.current) {
+      hoveredRef.current = true
+      document.body.style.cursor = 'pointer'
+    }
   }
 
   function handlePointerOut() {
-    setHovered(false)
+    hoveredRef.current = false
+    document.body.style.cursor = 'auto'
   }
 
   return (
