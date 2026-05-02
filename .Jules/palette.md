@@ -1,0 +1,3 @@
+## 2024-05-02 - [3D Accessibility & Smooth Feedback]
+**Learning:** In 3D Web applications, abruptly toggling visibility or scale can feel disjointed. Screen readers and keyboard navigation are often overlooked in `<canvas>`, making interactive meshes inaccessible.
+**Action:** Use Drei's `<Html>` to inject visually hidden, focusable DOM elements (like `<button>`) near interactive 3D objects, binding `onFocus` and `onBlur` to 3D hover states. Smoothly transition visual feedback (e.g., highlight material opacity) using `THREE.MathUtils.lerp` inside `useFrame` instead of boolean visibility toggles.
