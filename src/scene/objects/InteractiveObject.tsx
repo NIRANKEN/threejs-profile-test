@@ -1,4 +1,4 @@
-import { useEffect, useRef, useMemo } from "react";
+import { useEffect, useRef } from "react";
 import type { ReactNode } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
@@ -10,6 +10,15 @@ interface Props {
   sectionId: SectionId;
   children: ReactNode;
 }
+
+// Share highlight material instance across all interactive objects to reduce memory footprint and material instantiation overhead
+const sharedHighlightMaterial = new THREE.MeshBasicMaterial({
+  color: 0x0088ff,
+  transparent: true,
+  opacity: 0.3,
+  depthWrite: false,
+  side: THREE.DoubleSide,
+});
 
 export default function InteractiveObject({ sectionId, children }: Props) {
   const hoveredRef = useRef(false);
@@ -26,23 +35,6 @@ export default function InteractiveObject({ sectionId, children }: Props) {
     };
   }, []);
 
-  // ハイライト用マテリアル
-  const highlightMaterial = useMemo(() => {
-    return new THREE.MeshBasicMaterial({
-      color: 0x0088ff,
-      transparent: true,
-      opacity: 0.3,
-      depthWrite: false,
-      side: THREE.DoubleSide,
-    });
-  }, []);
-
-  useEffect(() => {
-    return () => {
-      highlightMaterial.dispose();
-    };
-  }, [highlightMaterial]);
-
   // マウント時に一度だけクローンを生成（ホバーのたびに生成しない）
   useEffect(() => {
     if (!groupRef.current || !highlightGroupRef.current) return;
@@ -50,7 +42,7 @@ export default function InteractiveObject({ sectionId, children }: Props) {
     const cloned = groupRef.current.clone();
     cloned.traverse((node) => {
       if (node instanceof THREE.Mesh) {
-        node.material = highlightMaterial;
+        node.material = sharedHighlightMaterial;
         node.scale.multiplyScalar(1.02);
         // ハイライトメッシュ自身がポインターイベントを受けないようにする
         node.raycast = () => {};
@@ -61,7 +53,7 @@ export default function InteractiveObject({ sectionId, children }: Props) {
     return () => {
       highlightGroup.clear();
     };
-  }, [highlightMaterial]);
+  }, []);
 
   // Reactの再レンダリングを避け、useFrameでvisibilityを直接制御
   useFrame(() => {
