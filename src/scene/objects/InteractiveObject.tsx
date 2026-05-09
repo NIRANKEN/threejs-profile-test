@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import type { ThreeEvent } from "@react-three/fiber";
+import { Html } from "@react-three/drei";
 import { usePortfolioStore } from "../../store/usePortfolioStore";
 import type { SectionId } from "../../types/sections";
 
@@ -90,10 +91,42 @@ export default function InteractiveObject({ sectionId, children }: Props) {
     document.body.style.cursor = "auto";
   }
 
+  function handleFocus() {
+    hoveredRef.current = true;
+  }
+
+  function handleBlur() {
+    hoveredRef.current = false;
+  }
+
+  function handleKeyDown(e: React.KeyboardEvent) {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      if (isTransitioning) return;
+      setActiveSection(activeSection === sectionId ? null : sectionId);
+    }
+  }
+
   return (
     <group onClick={handleClick} onPointerOver={handlePointerOver} onPointerOut={handlePointerOut}>
       <group ref={groupRef}>{children}</group>
       <group ref={highlightGroupRef} />
+      <Html distanceFactor={10} style={{ opacity: 0, pointerEvents: 'none' }}>
+        <button
+          className="sr-only"
+          aria-label={`${sectionId}の詳細を見る`}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          onKeyDown={handleKeyDown}
+          onClick={(e) => {
+            // Prevent default HTML button click if we trigger via 3D canvas
+            e.stopPropagation();
+            if (isTransitioning) return;
+            setActiveSection(activeSection === sectionId ? null : sectionId);
+          }}
+          style={{ pointerEvents: 'auto' }}
+        />
+      </Html>
     </group>
   );
 }
