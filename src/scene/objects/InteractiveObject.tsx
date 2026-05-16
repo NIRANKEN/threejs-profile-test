@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import type { ReactNode } from "react";
 import * as THREE from "three";
-import { useFrame } from "@react-three/fiber";
 import type { ThreeEvent } from "@react-three/fiber";
 import { usePortfolioStore } from "../../store/usePortfolioStore";
 import type { SectionId } from "../../types/sections";
@@ -59,13 +58,6 @@ export default function InteractiveObject({ sectionId, children }: Props) {
     };
   }, []);
 
-  // Reactの再レンダリングを避け、useFrameでvisibilityを直接制御
-  useFrame(() => {
-    if (highlightGroupRef.current) {
-      highlightGroupRef.current.visible = hoveredRef.current;
-    }
-  });
-
   function handleClick(e: ThreeEvent<MouseEvent>) {
     e.stopPropagation();
     if (isTransitioning) return;
@@ -77,12 +69,18 @@ export default function InteractiveObject({ sectionId, children }: Props) {
     e.stopPropagation();
     if (!hoveredRef.current) {
       hoveredRef.current = true;
+      if (highlightGroupRef.current) {
+        highlightGroupRef.current.visible = true;
+      }
       document.body.style.cursor = "pointer";
     }
   }
 
   function handlePointerOut() {
     hoveredRef.current = false;
+    if (highlightGroupRef.current) {
+      highlightGroupRef.current.visible = false;
+    }
     document.body.style.cursor = "auto";
   }
 
