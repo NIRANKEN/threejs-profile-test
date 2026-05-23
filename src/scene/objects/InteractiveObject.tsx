@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import type { ReactNode } from "react";
 import * as THREE from "three";
-import { useFrame } from "@react-three/fiber";
 import type { ThreeEvent } from "@react-three/fiber";
 import { usePortfolioStore } from "../../store/usePortfolioStore";
 import type { SectionId } from "../../types/sections";
@@ -25,7 +24,6 @@ interface Props {
 }
 
 export default function InteractiveObject({ sectionId, children }: Props) {
-  const hoveredRef = useRef(false);
   const groupRef = useRef<THREE.Group>(null);
   const highlightGroupRef = useRef<THREE.Group>(null);
   const activeSection = usePortfolioStore((s) => s.activeSection);
@@ -59,13 +57,6 @@ export default function InteractiveObject({ sectionId, children }: Props) {
     };
   }, []);
 
-  // Reactの再レンダリングを避け、useFrameでvisibilityを直接制御
-  useFrame(() => {
-    if (highlightGroupRef.current) {
-      highlightGroupRef.current.visible = hoveredRef.current;
-    }
-  });
-
   function handleClick(e: ThreeEvent<MouseEvent>) {
     e.stopPropagation();
     if (isTransitioning) return;
@@ -73,17 +64,23 @@ export default function InteractiveObject({ sectionId, children }: Props) {
     setActiveSection(activeSection === sectionId ? null : sectionId);
   }
 
+  // ─── Performance Optimization: Direct Mutation ──────────────────────────────
+  // Avoid polling infrequently changing object properties (like visibility) inside
+  // useFrame. Instead, use event-driven direct mutation (updating visibility directly
+  // inside onPointerOver and onPointerOut) to reduce CPU overhead in the render loop.
   function handlePointerOver(e: ThreeEvent<PointerEvent>) {
     e.stopPropagation();
-    if (!hoveredRef.current) {
-      hoveredRef.current = true;
+    if (highlightGroupRef.current && !highlightGroupRef.current.visible) {
+      highlightGroupRef.current.visible = true;
       document.body.style.cursor = "pointer";
     }
   }
 
   function handlePointerOut() {
-    hoveredRef.current = false;
-    document.body.style.cursor = "auto";
+    if (highlightGroupRef.current && highlightGroupRef.current.visible) {
+      highlightGroupRef.current.visible = false;
+      document.body.style.cursor = "auto";
+    }
   }
 
   return (
