@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import type { ReactNode } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
-import type { ThreeEvent } from "@react-three/fiber";
+import { Html } from "@react-three/drei";
 import { usePortfolioStore } from "../../store/usePortfolioStore";
 import type { SectionId } from "../../types/sections";
 
@@ -28,6 +28,7 @@ export default function InteractiveObject({ sectionId, children }: Props) {
   const hoveredRef = useRef(false);
   const groupRef = useRef<THREE.Group>(null);
   const highlightGroupRef = useRef<THREE.Group>(null);
+  const wrapperRef = useRef<THREE.Group>(null);
   const activeSection = usePortfolioStore((s) => s.activeSection);
   const isTransitioning = usePortfolioStore((s) => s.isTransitioning);
   const setActiveSection = usePortfolioStore((s) => s.setActiveSection);
@@ -60,21 +61,27 @@ export default function InteractiveObject({ sectionId, children }: Props) {
   }, []);
 
   // Reactの再レンダリングを避け、useFrameでvisibilityを直接制御
-  useFrame(() => {
+  useFrame((_, delta) => {
     if (highlightGroupRef.current) {
       highlightGroupRef.current.visible = hoveredRef.current;
     }
+    if (wrapperRef.current) {
+      const targetScale = hoveredRef.current ? 1.05 : 1.0;
+      const currentScale = wrapperRef.current.scale.x;
+      const newScale = THREE.MathUtils.lerp(currentScale, targetScale, delta * 10);
+      wrapperRef.current.scale.setScalar(newScale);
+    }
   });
 
-  function handleClick(e: ThreeEvent<MouseEvent>) {
-    e.stopPropagation();
+  function handleClick(e?: { stopPropagation: () => void }) {
+    if (e) e.stopPropagation();
     if (isTransitioning) return;
     // 同じセクションをクリックするとオーバービューに戻る（トグル）
     setActiveSection(activeSection === sectionId ? null : sectionId);
   }
 
-  function handlePointerOver(e: ThreeEvent<PointerEvent>) {
-    e.stopPropagation();
+  function handlePointerOver(e?: { stopPropagation: () => void }) {
+    if (e) e.stopPropagation();
     if (!hoveredRef.current) {
       hoveredRef.current = true;
       document.body.style.cursor = "pointer";
@@ -87,9 +94,18 @@ export default function InteractiveObject({ sectionId, children }: Props) {
   }
 
   return (
-    <group onClick={handleClick} onPointerOver={handlePointerOver} onPointerOut={handlePointerOut}>
+    <group ref={wrapperRef} onClick={handleClick as any} onPointerOver={handlePointerOver as any} onPointerOut={handlePointerOut}>
       <group ref={groupRef}>{children}</group>
       <group ref={highlightGroupRef} />
+      <Html distanceFactor={10} style={{ opacity: 0, pointerEvents: "none" }}>
+        <button
+          aria-label={`${sectionId}の詳細を表示`}
+          onFocus={() => handlePointerOver()}
+          onBlur={() => handlePointerOut()}
+          onClick={(e) => handleClick(e)}
+          style={{ width: "1px", height: "1px", pointerEvents: "auto" }}
+        />
+      </Html>
     </group>
   );
 }
