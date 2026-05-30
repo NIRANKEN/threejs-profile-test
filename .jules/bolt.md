@@ -1,2 +1,5 @@
 ## 2024-05-19 - [BakeShadows Optimization] **Learning:** Static scenes benefit heavily from BakeShadows. **Action:** Added BakeShadows when no dynamic lights or moving objects that cast shadows exist.
+
 ## 2026-05-02 - [Module-Level Shared Materials] **Learning:** Repeated instantiations of the same THREE.Material via useMemo across multiple identical components increase VRAM usage and put pressure on garbage collection (GC) and .dispose() cleanup inside useEffect. **Action:** Instantiate shared standard/basic materials at the module scope outside of the React component whenever possible to ensure true sharing, reduce VRAM footprint, and bypass complex component-level GC handling.
+
+## 2025-02-20 - [Optimize InteractiveObject useFrame & Add Preload] **Learning:** Continuously polling visibility boolean using useFrame results in unnecessary CPU overhead for interactive objects. For upfront shader compilation, `<Preload all />` allows avoiding frame drops when rendering elements the first time. **Action:** Applied event-driven mutation of refs for visibility and added `<Preload all />` inside `<Canvas>`.
