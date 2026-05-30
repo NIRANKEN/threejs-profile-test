@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import type { ThreeEvent } from "@react-three/fiber";
+import { Html } from "@react-three/drei";
 import { usePortfolioStore } from "../../store/usePortfolioStore";
 import type { SectionId } from "../../types/sections";
 
@@ -23,6 +24,13 @@ interface Props {
   sectionId: SectionId;
   children: ReactNode;
 }
+
+const SECTION_LABELS: Record<SectionId, string> = {
+  profile: "ベッド",
+  skills: "PCケース",
+  works: "モニター",
+  contact: "本",
+};
 
 export default function InteractiveObject({ sectionId, children }: Props) {
   const hoveredRef = useRef(false);
@@ -90,6 +98,20 @@ export default function InteractiveObject({ sectionId, children }: Props) {
     <group onClick={handleClick} onPointerOver={handlePointerOver} onPointerOut={handlePointerOut}>
       <group ref={groupRef}>{children}</group>
       <group ref={highlightGroupRef} />
+      <Html distanceFactor={10} style={{ opacity: 0, pointerEvents: "none" }}>
+        <button
+          className="sr-only"
+          tabIndex={0}
+          aria-label={`${SECTION_LABELS[sectionId]}の詳細を表示`}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (!isTransitioning) {
+              setActiveSection(activeSection === sectionId ? null : sectionId);
+            }
+          }}
+          style={{ pointerEvents: "auto" }}
+        />
+      </Html>
     </group>
   );
 }
