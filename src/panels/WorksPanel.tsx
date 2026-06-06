@@ -1,7 +1,8 @@
 const WORKS = [
   {
     title: "いくつかの3D Web開発案件に参画",
-    description: "React + Three.js などを利用したいくつかのアプリ開発経験(建築系や3Dアノテーションなど)",
+    description:
+      "React + Three.js などを利用したいくつかのアプリ開発経験(建築系や3Dアノテーションなど)",
     tags: ["React", "Typescript", "Node.js", "Three.js", "React Three Fiber", "Playwright"],
     url: "https://prtimes.jp/main/html/rd/p/000000095.000031224.html",
   },

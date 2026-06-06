@@ -1,2 +1,7 @@
 ## 2024-05-19 - [BakeShadows Optimization] **Learning:** Static scenes benefit heavily from BakeShadows. **Action:** Added BakeShadows when no dynamic lights or moving objects that cast shadows exist.
+
 ## 2026-05-02 - [Module-Level Shared Materials] **Learning:** Repeated instantiations of the same THREE.Material via useMemo across multiple identical components increase VRAM usage and put pressure on garbage collection (GC) and .dispose() cleanup inside useEffect. **Action:** Instantiate shared standard/basic materials at the module scope outside of the React component whenever possible to ensure true sharing, reduce VRAM footprint, and bypass complex component-level GC handling.
+
+## 2024-05-24 - [Event-Driven Mutation vs useFrame] **Learning:** Continuously polling static properties (like boolean hover states) inside useFrame unnecessarily consumes CPU cycles and increases the JS payload per frame, especially when multiplied by many objects. **Action:** Prefer event-driven direct mutation using useRef inside pointer handlers (onPointerOver/Out) rather than evaluating conditions inside useFrame.
+
+## 2024-05-24 - [Shader Compilation Stutter] **Learning:** Even simple geometries can cause noticeable stutter if their shaders compile mid-render when coming into the view frustum. **Action:** Added `<Preload all />` from drei inside the `<Canvas>` to force WebGL material compilation upfront.

@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import type { ReactNode } from "react";
 import * as THREE from "three";
-import { useFrame } from "@react-three/fiber";
 import type { ThreeEvent } from "@react-three/fiber";
 import { usePortfolioStore } from "../../store/usePortfolioStore";
 import type { SectionId } from "../../types/sections";
@@ -59,12 +58,9 @@ export default function InteractiveObject({ sectionId, children }: Props) {
     };
   }, []);
 
-  // Reactの再レンダリングを避け、useFrameでvisibilityを直接制御
-  useFrame(() => {
-    if (highlightGroupRef.current) {
-      highlightGroupRef.current.visible = hoveredRef.current;
-    }
-  });
+  // ─── 3D Optimization: Event-Driven Direct Mutation ────────────────────────
+  // Avoid continuous polling in useFrame for static boolean properties.
+  // Directly update visibility inside pointer events to save CPU cycles per frame.
 
   function handleClick(e: ThreeEvent<MouseEvent>) {
     e.stopPropagation();
@@ -78,12 +74,18 @@ export default function InteractiveObject({ sectionId, children }: Props) {
     if (!hoveredRef.current) {
       hoveredRef.current = true;
       document.body.style.cursor = "pointer";
+      if (highlightGroupRef.current) {
+        highlightGroupRef.current.visible = true;
+      }
     }
   }
 
   function handlePointerOut() {
     hoveredRef.current = false;
     document.body.style.cursor = "auto";
+    if (highlightGroupRef.current) {
+      highlightGroupRef.current.visible = false;
+    }
   }
 
   return (
