@@ -1,6 +1,7 @@
 import { Suspense, Component } from "react";
 import type { ErrorInfo, ReactNode } from "react";
 import { Canvas } from "@react-three/fiber";
+import { Preload } from "@react-three/drei";
 import SceneRoot from "./scene/SceneRoot";
 import PanelOverlay from "./panels/PanelOverlay";
 import HelpButton from "./panels/HelpButton";
@@ -111,6 +112,10 @@ export default function App() {
             gl={{ antialias: true }}
           >
             <SceneRoot />
+            {/* ─── 3D Optimization: Precompile Shaders ─────────────────────────
+                Forces WebGL compilation of all materials upfront. Prevents frame drops
+                when rotating the camera to view previously off-screen objects for the first time. */}
+            <Preload all />
           </Canvas>
         </Suspense>
 
