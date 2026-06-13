@@ -1,6 +1,7 @@
 import { Suspense, Component } from "react";
 import type { ErrorInfo, ReactNode } from "react";
 import { Canvas } from "@react-three/fiber";
+import { Preload } from "@react-three/drei";
 import SceneRoot from "./scene/SceneRoot";
 import PanelOverlay from "./panels/PanelOverlay";
 import HelpButton from "./panels/HelpButton";
@@ -111,6 +112,7 @@ export default function App() {
             gl={{ antialias: true }}
           >
             <SceneRoot />
+            <Preload all />
           </Canvas>
         </Suspense>
 
