@@ -1,6 +1,6 @@
 import { Suspense, Component } from "react";
 import type { ReactNode } from "react";
-import { Environment, BakeShadows } from "@react-three/drei";
+import { Environment, BakeShadows, Preload } from "@react-three/drei";
 import FirstPersonController from "./FirstPersonController";
 import RoomLights from "./lights/RoomLights";
 import { RoomModel } from "./RoomModel";
@@ -44,6 +44,7 @@ export default function SceneRoot() {
         </SceneErrorBoundary>
         <RoomModel />
         <BakeShadows />
+        <Preload all />
       </Suspense>
       {/* 開発環境のみ: XYZ軸 + カメラ座標ログ */}
       <SceneDevTools />
