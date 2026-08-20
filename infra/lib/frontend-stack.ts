@@ -80,9 +80,12 @@ export class FrontendStack extends cdk.Stack {
     const distPath = path.join(__dirname, "..", "..", "dist");
 
     // ハッシュ付きファイル（Viteの assets/*）は長期キャッシュ。
+    // 注意: Source.asset の exclude はネガティブパターン（"!assets/**"）が
+    // 期待通りに機能せず全ファイルが除外されるため、assets ディレクトリを直接指定する。
     const hashedAssetsDeployment = new s3deploy.BucketDeployment(this, "DeployHashedAssets", {
-      sources: [s3deploy.Source.asset(distPath, { exclude: ["*", "!assets/**"] })],
+      sources: [s3deploy.Source.asset(path.join(distPath, "assets"))],
       destinationBucket: siteBucket,
+      destinationKeyPrefix: "assets",
       cacheControl: [
         s3deploy.CacheControl.maxAge(cdk.Duration.days(365)),
         s3deploy.CacheControl.fromString("immutable"),

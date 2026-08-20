@@ -15,15 +15,18 @@ const env: cdk.Environment = {
 // 管理者権限を持つローカル環境から一度だけ `cdk deploy GithubOidcStack` する。
 new GithubOidcStack(app, "GithubOidcStack", {
   env,
-  githubRepo: app.node.tryGetContext("githubRepo") ?? "niranken/threejs-profile-test",
+  githubRepo: app.node.tryGetContext("githubRepo") ?? "NIRANKEN/threejs-profile-test",
   allowedBranch: app.node.tryGetContext("allowedBranch") ?? "main",
   allowedEnvironment: app.node.tryGetContext("allowedEnvironment") ?? "production",
 });
 
 // カスタムドメインを使う場合は `-c siteDomain=portfolio.example.com` のように指定する。
+// 未指定時はGitHub Actionsからのデプロイでもカスタムドメインが失われないよう、
+// 本番で使用しているドメインをデフォルト値とする。
 // hostedZoneDomain を省略した場合、siteDomainの先頭ラベルを除いた部分をゾーン名とみなす
 // （例: siteDomain=portfolio.example.com -> hostedZoneDomain=example.com）。
-const siteDomain: string | undefined = app.node.tryGetContext("siteDomain");
+const siteDomain: string | undefined =
+  app.node.tryGetContext("siteDomain") ?? "portfolio.mayatecholab.com";
 const hostedZoneDomain: string | undefined =
   app.node.tryGetContext("hostedZoneDomain") ?? siteDomain?.split(".").slice(1).join(".");
 
