@@ -57,16 +57,19 @@ export class GithubOidcStack extends cdk.Stack {
 
     // CDKデプロイ自体はブートストラップ済みのロール（file-publishing-role /
     // deploy-role 等）に委譲されるため、このロールはそれらをAssumeできれば十分。
+    // CertificateStackはCloudFront証明書の制約でus-east-1固定のため、
+    // このスタックのリージョンに加えてus-east-1のブートストラップロールも許可する。
+    const bootstrapRegions = Array.from(new Set([this.region, "us-east-1"]));
     this.deployRole.addToPolicy(
       new iam.PolicyStatement({
         sid: "AssumeCdkBootstrapRoles",
         effect: iam.Effect.ALLOW,
         actions: ["sts:AssumeRole"],
-        resources: [
-          `arn:${this.partition}:iam::${this.account}:role/cdk-${qualifier}-deploy-role-${this.account}-${this.region}`,
-          `arn:${this.partition}:iam::${this.account}:role/cdk-${qualifier}-file-publishing-role-${this.account}-${this.region}`,
-          `arn:${this.partition}:iam::${this.account}:role/cdk-${qualifier}-lookup-role-${this.account}-${this.region}`,
-        ],
+        resources: bootstrapRegions.flatMap((region) => [
+          `arn:${this.partition}:iam::${this.account}:role/cdk-${qualifier}-deploy-role-${this.account}-${region}`,
+          `arn:${this.partition}:iam::${this.account}:role/cdk-${qualifier}-file-publishing-role-${this.account}-${region}`,
+          `arn:${this.partition}:iam::${this.account}:role/cdk-${qualifier}-lookup-role-${this.account}-${region}`,
+        ]),
       }),
     );
 

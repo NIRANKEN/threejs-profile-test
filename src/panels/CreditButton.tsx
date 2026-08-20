@@ -89,6 +89,45 @@ export default function CreditButton() {
               </a>
             </p>
           </div>
+
+          <div className="credit-card">
+            <div className="credit-card__badge">3D Model</div>
+            <h3 className="credit-card__model-title">
+              <a
+                href="https://sketchfab.com/3d-models/mountain-movie-lounge-d0336afb3af447dd896b3f17f06751d9"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Mountain Movie Lounge
+              </a>
+            </h3>
+            <p className="credit-card__author">
+              Author:{" "}
+              <a
+                href="https://sketchfab.com/ElinHohler"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Elin
+              </a>
+            </p>
+            <p className="credit-card__license">
+              License:{" "}
+              <a
+                href="http://creativecommons.org/licenses/by/4.0/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                CC BY 4.0 (Attribution 4.0 International)
+              </a>
+            </p>
+            <p className="credit-card__source">
+              Source:{" "}
+              <a href="https://sketchfab.com" target="_blank" rel="noopener noreferrer">
+                Sketchfab
+              </a>
+            </p>
+          </div>
         </div>
       </div>
     </>
