@@ -7,15 +7,7 @@ const SKILLS = [
   },
   {
     category: "Tools",
-    items: [
-      "Git",
-      "GitHub Actions",
-      "Docker",
-      "Linux",
-      "Figma",
-      "Claude Code",
-      "Antigravity",
-    ],
+    items: ["Git", "GitHub Actions", "Docker", "Linux", "Figma", "Claude Code", "Antigravity"],
   },
 ];
 

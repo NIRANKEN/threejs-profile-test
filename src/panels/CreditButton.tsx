@@ -27,11 +27,7 @@ export default function CreditButton() {
 
       {/* バックドロップ */}
       {open && (
-        <div
-          className="credit-backdrop"
-          onClick={() => setOpen(false)}
-          aria-hidden="true"
-        />
+        <div className="credit-backdrop" onClick={() => setOpen(false)} aria-hidden="true" />
       )}
 
       {/* ダイアログ */}
@@ -88,11 +84,7 @@ export default function CreditButton() {
             </p>
             <p className="credit-card__source">
               Source:{" "}
-              <a
-                href="https://sketchfab.com"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <a href="https://sketchfab.com" target="_blank" rel="noopener noreferrer">
                 Sketchfab
               </a>
             </p>
