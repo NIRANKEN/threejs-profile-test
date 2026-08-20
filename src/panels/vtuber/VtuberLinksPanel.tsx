@@ -7,7 +7,7 @@ export default function VtuberLinksPanel() {
       </p>
       <div className="panel-links" style={{ flexDirection: "column", gap: "0.85rem" }}>
         <a
-          href="https://youtube.com"
+          href="https://www.youtube.com/@MinegishiToppa"
           target="_blank"
           rel="noopener noreferrer"
           className="panel-work-card"
@@ -17,7 +17,7 @@ export default function VtuberLinksPanel() {
             <div>
               <div style={{ fontWeight: 600, fontSize: "0.95rem" }}>YouTube Channel</div>
               <div style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.6)" }}>
-                メイン配信・技術解説・登山Vlogアーカイブ
+                メイン配信・技術解説・登山Vlogアーカイブ(予定)
               </div>
             </div>
           </div>

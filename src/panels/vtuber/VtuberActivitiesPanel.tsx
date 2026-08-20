@@ -1,21 +1,15 @@
 const ACTIVITIES = [
   {
-    title: "⛰️ 登山×テクノロジー配信",
+    title: "⛰️ 登山Vlog(やりたい)",
     description: "GPSログや3Dマップを活用した登山ルート解説や山小屋からのリアルタイム雑談配信。",
     tags: ["Streaming", "Outdoor", "GPS 3D", "Talk"],
-    url: "https://youtube.com",
+    url: "https://www.youtube.com/@MinegishiToppa",
   },
   {
-    title: "💻 みねちゃんのライブコーディング",
+    title: "💻 みねちゃんのライブコーディング(やりたい)",
     description: "いろいろな技術を試したり、遊んだり、開発作業を進めながら雑談する配信かも",
     tags: ["Live Coding", "プログラミング", "雑談"],
-    url: "https://youtube.com",
-  },
-  {
-    title: "⛺ キャンプギア紹介 & もくもく作業枠",
-    description: "おすすめアウトドアギアのレビューや、BGMを流しながらの深夜もくもくプログラミング枠。",
-    tags: ["Camp Gear", "Focus Work", "Lo-Fi"],
-    url: "https://twitch.tv",
+    url: "https://www.youtube.com/@MinegishiToppa",
   },
 ];
 

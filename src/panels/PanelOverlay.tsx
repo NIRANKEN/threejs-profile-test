@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { usePortfolioStore } from "../store/usePortfolioStore";
-import type { SectionId, SceneMode } from "../types/sections";
+import type { SceneMode } from "../types/sections";
 import ProfilePanel from "./ProfilePanel";
 import SkillsPanel from "./SkillsPanel";
 import WorksPanel from "./WorksPanel";
