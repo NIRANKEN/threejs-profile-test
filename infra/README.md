@@ -2,7 +2,8 @@
 
 `threejs-profile-test` フロントエンド（Viteの静的ビルド）を S3 + CloudFront にデプロイするための CDK スタック。
 
-- **FrontendStack**: 非公開のS3バケット + CloudFront（Origin Access Control 経由でのみS3へアクセス）。ビルド成果物 (`../dist`) を `BucketDeployment` でアップロードし、デプロイの都度キャッシュを invalidate する。
+- **FrontendStack**: 非公開のS3バケット + CloudFront（Origin Access Control 経由でのみS3へアクセス）。ビルド成果物 (`../dist`) を `BucketDeployment` でアップロードし、デプロイの都度キャッシュを invalidate する。`siteDomain` context を渡した場合のみカスタムドメイン（Route53 Alias + ACM証明書）を有効化する。
+- **CertificateStack**: `siteDomain` context 指定時のみ作成される、`us-east-1` 固定のACM証明書（DNS検証、Route53ホストゾーンへの委任）。CloudFrontは証明書だけ`us-east-1`必須という制約があるため、`FrontendStack`とは別スタックに分離している。
 - **GithubOidcStack**: GitHub Actions が長期アクセスキーなしでAWSにデプロイできるようにする OIDC 用 IAM ロール。CDKブートストラップロール一式のみを AssumeRole できる最小権限構成。
 
 ## 初回セットアップ（手動・一度だけ）
@@ -31,8 +32,24 @@ npx cdk deploy GithubOidcStack
 
 - GitHub リポジトリ: `niranken/threejs-profile-test`
 - OIDCロールをAssumeできるのは `main` ブランチからのワークフロー実行のみ（`bin/infra.ts` の `githubRepo` / `allowedBranch` で変更可能）
-- CloudFrontはカスタムドメイン未設定（`*.cloudfront.net` のデフォルトドメインで配信）。独自ドメインを使う場合は `us-east-1` のACM証明書とRoute 53設定を `FrontendStack` に追加すること。
+- CloudFrontはデフォルトでカスタムドメイン未設定（`*.cloudfront.net` で配信）。独自ドメインを使う場合は下記「カスタムドメインを使う場合」を参照。
 - `SiteBucket` は `RemovalPolicy.DESTROY` + `autoDeleteObjects: true`。検証用途のための設定であり、本番でバケットを誤削除から守りたい場合は `RETAIN` に変更する。
+
+## カスタムドメインを使う場合
+
+対象ドメイン（例: `portfolio.example.com`）を管理するRoute53ホストゾーンが同一AWSアカウントに存在することが前提。
+
+```bash
+cd infra
+npx cdk deploy CertificateStack FrontendStack \
+  -c siteDomain=portfolio.example.com
+  # ゾーン名が siteDomain の親ドメインと異なる場合のみ:
+  # -c hostedZoneDomain=example.com
+```
+
+- `hostedZoneDomain` を省略すると、`siteDomain` の先頭ラベルを除いた部分（`portfolio.example.com` → `example.com`）がゾーン名とみなされる。
+- **対象の名前に既存のCNAMEレコードがある場合は事前に削除しておくこと。** Route53は同じ名前にCNAMEとA/AAAA(Alias)レコードを共存させられないため、CNAMEが残ったままだとRoute53 Aliasレコードの作成時にデプロイが失敗する。
+- GitHub Actions (`deploy.yml`) から自動デプロイする場合も、`cdk deploy`のコマンドに同じ`-c siteDomain=...`を渡すよう `working-directory: infra` のステップを更新すること（現状のワークフローは `FrontendStack` のみをドメイン指定なしでデプロイする設定になっている）。
 
 ## ローカルでの確認
 
