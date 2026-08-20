@@ -10,11 +10,7 @@ export default function ContactPanel() {
           rel="noreferrer"
           className="panel-contact-item"
         >
-          <img
-            src="/images/github.png"
-            alt="GitHub"
-            className="panel-contact-icon-img"
-          />
+          <img src="/images/github.png" alt="GitHub" className="panel-contact-icon-img" />
           <span>GitHub</span>
         </a>
         <a
@@ -23,11 +19,7 @@ export default function ContactPanel() {
           rel="noreferrer"
           className="panel-contact-item"
         >
-          <img
-            src="/images/misskey.png"
-            alt="Misskey"
-            className="panel-contact-icon-img"
-          />
+          <img src="/images/misskey.png" alt="Misskey" className="panel-contact-icon-img" />
           <span>Misskey</span>
         </a>
       </div>

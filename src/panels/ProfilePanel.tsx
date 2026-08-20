@@ -2,23 +2,17 @@ export default function ProfilePanel() {
   return (
     <div className="panel-content">
       <h2 className="panel-title">Profile</h2>
-      <img
-        src="/images/niranken_prof.jpg"
-        alt="NIRANKEN"
-        className="panel-avatar"
-      />
+      <img src="/images/niranken_prof.jpg" alt="NIRANKEN" className="panel-avatar" />
       <p className="panel-name">NIRANKEN</p>
       <p className="panel-role">Frontend / Backend / 3D Developer</p>
       <p className="panel-bio">
-        React, Three.js, Flutter, NodeJS, Go
-        を中心としたアプリ開発をよくしています。
+        React, Three.js, Flutter, NodeJS, Go を中心としたアプリ開発をよくしています。
         <br />
         興味のあることは隙間時間で習得を試みてます！
         <br />
         (Flutterアプリのリリース / スクラムマスター資格取得 / ... )
         <br />
-        最近はClaude
-        CodeやAntigravityなどのAIツールを活用して開発を進めています。
+        最近はClaude CodeやAntigravityなどのAIツールを活用して開発を進めています。
       </p>
       <div className="panel-links">
         <a

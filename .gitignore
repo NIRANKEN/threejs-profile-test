@@ -12,6 +12,12 @@ dist
 dist-ssr
 *.local
 
+# CDK (infra/)
+cdk.out
+cdk-outputs.json
+# AWSアカウントID/ホストゾーンIDなどが載るためコミットしない
+cdk.context.json
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

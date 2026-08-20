@@ -25,4 +25,3 @@ Currently, two official plugins are available:
 - **Author**: [Waven](https://sketchfab.com/wavenquack24)
 - **License**: [CC BY 4.0 (Attribution 4.0 International)](http://creativecommons.org/licenses/by/4.0/)
 - **Source**: [Sketchfab](https://sketchfab.com)
-
