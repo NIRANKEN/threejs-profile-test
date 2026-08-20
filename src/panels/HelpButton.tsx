@@ -66,7 +66,8 @@ export default function HelpButton() {
               <li className="help-list__item">
                 <span className="help-list__icon">🖱️</span>
                 <span>
-                  <strong>左ドラッグ</strong>で視点（カメラの向き）を操作できます
+                  <strong>左ドラッグ</strong>
+                  で視点（カメラの向き）を操作できます
                 </span>
               </li>
               <li className="help-list__item">
@@ -148,11 +149,7 @@ export default function HelpButton() {
                 &ldquo;Mountain Movie Lounge&rdquo;
               </a>{" "}
               by{" "}
-              <a
-                href="https://sketchfab.com/ElinHohler"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <a href="https://sketchfab.com/ElinHohler" target="_blank" rel="noopener noreferrer">
                 Elin
               </a>{" "}
               (

@@ -103,11 +103,7 @@ export default function CreditButton() {
             </h3>
             <p className="credit-card__author">
               Author:{" "}
-              <a
-                href="https://sketchfab.com/ElinHohler"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <a href="https://sketchfab.com/ElinHohler" target="_blank" rel="noopener noreferrer">
                 Elin
               </a>
             </p>
