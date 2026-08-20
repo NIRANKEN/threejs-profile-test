@@ -125,6 +125,16 @@ body {
   margin-bottom: 0.5rem;
 }
 
+.panel-avatar--character {
+  width: 120px;
+  height: 160px;
+  border-radius: 12px;
+  object-position: top center;
+  border: 2px solid rgba(167, 139, 250, 0.4);
+  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.25);
+  margin-bottom: 0.75rem;
+}
+
 .panel-name {
   font-size: 1.3rem;
   font-weight: 600;
@@ -942,4 +952,150 @@ body {
 
 .credit-card a:hover {
   color: #c4cbff;
+}
+
+/* ===== Scene Toggle UI ===== */
+.scene-toggle-container {
+  position: fixed;
+  top: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(15, 15, 25, 0.8);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  padding: 4px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.45);
+}
+
+.scene-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 1.1rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+}
+
+.scene-toggle-btn:hover:not(:disabled) {
+  color: white;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.scene-toggle-btn--active {
+  color: #ffffff !important;
+  background: linear-gradient(
+    135deg,
+    rgba(99, 102, 241, 0.85) 0%,
+    rgba(139, 92, 246, 0.85) 100%
+  ) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 2px 12px rgba(124, 58, 237, 0.45);
+}
+
+.scene-toggle-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.scene-toggle-btn__icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+/* Menu header switch button */
+.nav-dropdown__switch-btn {
+  margin-top: 0.5rem;
+  width: 100%;
+  padding: 0.45rem 0.75rem;
+  background: rgba(139, 92, 246, 0.15);
+  border: 1px solid rgba(139, 92, 246, 0.35);
+  border-radius: 8px;
+  color: #c4b5fd;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.nav-dropdown__switch-btn:hover:not(:disabled) {
+  background: rgba(139, 92, 246, 0.28);
+  border-color: rgba(139, 92, 246, 0.55);
+  color: #ffffff;
+}
+
+.nav-dropdown__switch-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ===== Scene Transition Overlay ===== */
+.scene-transition-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: radial-gradient(
+    circle at center,
+    rgba(15, 15, 26, 0.96) 0%,
+    rgba(5, 5, 10, 0.98) 100%
+  );
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.scene-transition-overlay--active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.scene-transition-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.scene-transition-spinner {
+  width: 44px;
+  height: 44px;
+  border: 3px solid rgba(139, 92, 246, 0.2);
+  border-top-color: #a78bfa;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.scene-transition-text {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }

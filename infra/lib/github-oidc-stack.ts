@@ -7,6 +7,8 @@ export interface GithubOidcStackProps extends cdk.StackProps {
   readonly githubRepo: string;
   /** このロールを引き受けられるブランチ（例: "main"） */
   readonly allowedBranch: string;
+  /** ワークフローが `environment:` で指定するGitHub Environment名（例: "production"） */
+  readonly allowedEnvironment: string;
   /** CDKブートストラップの qualifier（未指定時は既定値 "hnb659fds"） */
   readonly bootstrapQualifier?: string;
 }
@@ -36,14 +38,19 @@ export class GithubOidcStack extends cdk.Stack {
 
     this.deployRole = new iam.Role(this, "GithubActionsDeployRole", {
       roleName: "github-actions-threejs-profile-deploy",
-      description: `CDK deploy role assumed via OIDC by GitHub Actions (${props.githubRepo}@${props.allowedBranch})`,
+      description: `CDK deploy role assumed via OIDC by GitHub Actions (${props.githubRepo}@${props.allowedBranch}, environment:${props.allowedEnvironment})`,
       maxSessionDuration: cdk.Duration.hours(1),
       assumedBy: new iam.WebIdentityPrincipal(provider.openIdConnectProviderArn, {
         StringEquals: {
           "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
         },
         StringLike: {
-          "token.actions.githubusercontent.com:sub": `repo:${props.githubRepo}:ref:refs/heads/${props.allowedBranch}`,
+          // ワークフローが `environment: production` を宣言していると、OIDCトークンの
+          // subクレームはref形式ではなくenvironment形式になるため、両方を許可する。
+          "token.actions.githubusercontent.com:sub": [
+            `repo:${props.githubRepo}:ref:refs/heads/${props.allowedBranch}`,
+            `repo:${props.githubRepo}:environment:${props.allowedEnvironment}`,
+          ],
         },
       }),
     });

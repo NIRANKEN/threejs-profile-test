@@ -21,6 +21,7 @@ import type * as THREE from "three";
 import { useGLTF } from "@react-three/drei";
 import type { GLTF } from "three/examples/jsm/loaders/GLTFLoader.js";
 import InteractiveObject from "./objects/InteractiveObject";
+import { usePortfolioStore } from "../store/usePortfolioStore";
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -123,6 +124,7 @@ type GLTFResult = GLTF & {
 
 export function RoomModel() {
   const { nodes, materials } = useGLTF("/models/room.glb") as unknown as GLTFResult;
+  const setSceneMode = usePortfolioStore((s) => s.setSceneMode);
   return (
     <group dispose={null}>
       <group rotation={[-Math.PI / 2, 0, 0]} scale={0.913}>
@@ -217,6 +219,27 @@ export function RoomModel() {
             <mesh geometry={nodes.Object_53.geometry} material={materials.Mouse} />
             <mesh geometry={nodes.Object_54.geometry} material={materials.BlueLight} />
           </group>
+
+          {/* ── VRゴーグル: クリックで VIRTUAL シーンへ遷移 ── */}
+          <InteractiveObject onClick={() => setSceneMode("virtual")} highlightColor={0xa855f7}>
+            <group position={[-1.9, 1.05, -1.1]} rotation={[0, 0.4, 0]} scale={0.9}>
+              {/* ゴーグル本体 */}
+              <mesh castShadow>
+                <boxGeometry args={[0.24, 0.12, 0.16]} />
+                <meshStandardMaterial color="#1e1e2f" roughness={0.3} metalness={0.8} />
+              </mesh>
+              {/* フロントバイザー（発光） */}
+              <mesh position={[0, 0, 0.082]}>
+                <boxGeometry args={[0.2, 0.08, 0.01]} />
+                <meshStandardMaterial color="#c084fc" emissive="#a855f7" emissiveIntensity={1.2} />
+              </mesh>
+              {/* ヘッドストラップ */}
+              <mesh position={[0, 0, -0.06]}>
+                <boxGeometry args={[0.25, 0.04, 0.12]} />
+                <meshStandardMaterial color="#111827" />
+              </mesh>
+            </group>
+          </InteractiveObject>
 
           {/* ── ナノリーフ（非インタラクティブ）── */}
           <group position={[0.133, 1.2, -2.24]}>

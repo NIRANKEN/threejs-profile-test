@@ -2,7 +2,11 @@ import { useRef, useEffect } from "react";
 import { Vector3 } from "three";
 import { useFrame, useThree } from "@react-three/fiber";
 import { usePortfolioStore } from "../store/usePortfolioStore";
-import { INITIAL_ORIENTATION, SECTION_ORIENTATIONS } from "../types/sections";
+import {
+  SCENE_INITIAL_ORIENTATION,
+  SCENE_ROOM_BOUNDS,
+  SCENE_SECTION_ORIENTATIONS,
+} from "../types/sections";
 import { useFirstPersonInput } from "../hooks/useFirstPersonInput";
 import { useMouseLook } from "../hooks/useMouseLook";
 
@@ -11,31 +15,24 @@ const MOVE_SPEED = 3.0; // units/秒
 const LERP_SPEED = 8.0; // exponential lerp 係数（遷移アニメーション）
 const SNAP_THRESHOLD = 0.01; // この距離以下でスナップ確定
 
-const ROOM_BOUNDS = {
-  xMin: -2.8,
-  xMax: 2.8,
-  yFixed: 1.6, // 目線高さ固定（飛行・落下なし）
-  zMin: -2.0,
-  zMax: 2.0,
-} as const;
-
 // ─── GC 対策: モジュールスコープで事前確保（useFrame 内で new しない）──────
 const _fwd = new Vector3();
 const _right = new Vector3();
 const _up = new Vector3(0, 1, 0);
 const _move = new Vector3();
-const _targetPos = new Vector3(...INITIAL_ORIENTATION.position);
+const _targetPos = new Vector3(...SCENE_INITIAL_ORIENTATION.real.position);
 
 /**
  * 一人称視点カメラコントローラー。
  * - WASD で部屋の中を自由移動
  * - 左ドラッグで視点（yaw/pitch）を操作
  * - セクション選択時に固定カメラアングルへ exponential lerp で遷移
- * - 部屋の境界ボックスで壁抜けを防止
+ * - 部屋（REAL / VIRTUAL）に応じた境界ボックスで壁抜けを防止
  */
 export default function FirstPersonController() {
   const { camera, gl } = useThree();
 
+  const currentScene = usePortfolioStore((s) => s.currentScene);
   const activeSection = usePortfolioStore((s) => s.activeSection);
   const isTransitioning = usePortfolioStore((s) => s.isTransitioning);
   const setTransitioning = usePortfolioStore((s) => s.setTransitioning);
@@ -44,19 +41,35 @@ export default function FirstPersonController() {
   const keysRef = useFirstPersonInput();
   const { yawRef, pitchRef } = useMouseLook(gl.domElement, !isTransitioning);
 
-  // 遷移先の目標値（ref で保持: 再レンダリング不要）
-  const targetYawRef = useRef(INITIAL_ORIENTATION.yaw);
-  const targetPitchRef = useRef(INITIAL_ORIENTATION.pitch);
-  const isFirstMount = useRef(true);
+  const initialOrientation = SCENE_INITIAL_ORIENTATION[currentScene];
+  const sectionOrientations = SCENE_SECTION_ORIENTATIONS[currentScene];
+  const roomBounds = SCENE_ROOM_BOUNDS[currentScene];
 
-  // カメラ初期化: rotation.order = 'YXZ'（FPS標準）
+  // 遷移先の目標値（ref で保持: 再レンダリング不要）
+  const targetYawRef = useRef(initialOrientation.yaw);
+  const targetPitchRef = useRef(initialOrientation.pitch);
+  const isFirstMount = useRef(true);
+  const prevSceneRef = useRef(currentScene);
+
+  // カメラ初期化 & シーン切り替え時の姿勢同期
   useEffect(() => {
     camera.rotation.order = "YXZ";
-    camera.position.set(...INITIAL_ORIENTATION.position);
-    camera.rotation.y = INITIAL_ORIENTATION.yaw;
-    camera.rotation.x = INITIAL_ORIENTATION.pitch;
-    _targetPos.set(...INITIAL_ORIENTATION.position);
-  }, [camera]);
+    const orient = SCENE_INITIAL_ORIENTATION[currentScene];
+
+    // 初回マウントまたはシーン変更時
+    if (isFirstMount.current || prevSceneRef.current !== currentScene) {
+      camera.position.set(...orient.position);
+      camera.rotation.y = orient.yaw;
+      camera.rotation.x = orient.pitch;
+      yawRef.current = orient.yaw;
+      pitchRef.current = orient.pitch;
+      targetYawRef.current = orient.yaw;
+      targetPitchRef.current = orient.pitch;
+      _targetPos.set(...orient.position);
+      prevSceneRef.current = currentScene;
+      setTransitioning(false);
+    }
+  }, [camera, currentScene, setTransitioning, yawRef, pitchRef]);
 
   // activeSection 変化 → 遷移先をセット
   useEffect(() => {
@@ -64,29 +77,33 @@ export default function FirstPersonController() {
       isFirstMount.current = false;
       return;
     }
-    const orient = activeSection ? SECTION_ORIENTATIONS[activeSection] : INITIAL_ORIENTATION;
+    const orient =
+      activeSection && sectionOrientations[activeSection]
+        ? sectionOrientations[activeSection]
+        : initialOrientation;
+
     _targetPos.set(...orient.position);
     targetYawRef.current = orient.yaw;
     targetPitchRef.current = orient.pitch;
     setTransitioning(true);
-  }, [activeSection, setTransitioning]);
+  }, [activeSection, currentScene, initialOrientation, sectionOrientations, setTransitioning]);
 
   // resetSignal 変化 → 初期位置へリセット遷移
   useEffect(() => {
     if (resetSignal === 0) return;
-    _targetPos.set(...INITIAL_ORIENTATION.position);
-    targetYawRef.current = INITIAL_ORIENTATION.yaw;
-    targetPitchRef.current = INITIAL_ORIENTATION.pitch;
+    _targetPos.set(...initialOrientation.position);
+    targetYawRef.current = initialOrientation.yaw;
+    targetPitchRef.current = initialOrientation.pitch;
     setTransitioning(true);
-  }, [resetSignal, setTransitioning]);
+  }, [resetSignal, initialOrientation, setTransitioning]);
 
   useFrame((_, delta) => {
     // NaN ガード（外部起因の破損を検出したら即時フォールバック）
     const p = camera.position;
     if (isNaN(p.x) || isNaN(p.y) || isNaN(p.z)) {
-      camera.position.set(...INITIAL_ORIENTATION.position);
-      yawRef.current = 0;
-      pitchRef.current = 0;
+      camera.position.set(...initialOrientation.position);
+      yawRef.current = initialOrientation.yaw;
+      pitchRef.current = initialOrientation.pitch;
     }
 
     // delta を最大 0.1 秒でクランプ（タブ復帰時の大ジャンプ防止）
@@ -137,9 +154,9 @@ export default function FirstPersonController() {
       }
 
       // 境界クランプ（毎フレーム適用: NaN 積算誤差も吸収）
-      camera.position.x = Math.max(ROOM_BOUNDS.xMin, Math.min(ROOM_BOUNDS.xMax, camera.position.x));
-      camera.position.y = ROOM_BOUNDS.yFixed;
-      camera.position.z = Math.max(ROOM_BOUNDS.zMin, Math.min(ROOM_BOUNDS.zMax, camera.position.z));
+      camera.position.x = Math.max(roomBounds.xMin, Math.min(roomBounds.xMax, camera.position.x));
+      camera.position.y = roomBounds.yFixed;
+      camera.position.z = Math.max(roomBounds.zMin, Math.min(roomBounds.zMax, camera.position.z));
     }
 
     // rotation を適用（遷移中・自由移動中、どちらでも毎フレーム反映）

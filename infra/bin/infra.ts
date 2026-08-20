@@ -17,6 +17,7 @@ new GithubOidcStack(app, "GithubOidcStack", {
   env,
   githubRepo: app.node.tryGetContext("githubRepo") ?? "niranken/threejs-profile-test",
   allowedBranch: app.node.tryGetContext("allowedBranch") ?? "main",
+  allowedEnvironment: app.node.tryGetContext("allowedEnvironment") ?? "production",
 });
 
 // カスタムドメインを使う場合は `-c siteDomain=portfolio.example.com` のように指定する。

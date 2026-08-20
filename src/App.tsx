@@ -2,13 +2,17 @@ import { Suspense, Component } from "react";
 import type { ErrorInfo, ReactNode } from "react";
 import { Canvas } from "@react-three/fiber";
 import SceneRoot from "./scene/SceneRoot";
+import VtuberSceneRoot from "./scene/vtuber/VtuberSceneRoot";
 import PanelOverlay from "./panels/PanelOverlay";
 import HelpButton from "./panels/HelpButton";
 import ResetButton from "./panels/ResetButton";
 import NavigationMenu from "./panels/NavigationMenu";
 import CreditButton from "./panels/CreditButton";
+import SceneToggle from "./panels/SceneToggle";
+import SceneTransitionOverlay from "./panels/SceneTransitionOverlay";
 import { DevHud } from "./scene/DevTools";
-import { INITIAL_ORIENTATION } from "./types/sections";
+import { SCENE_INITIAL_ORIENTATION } from "./types/sections";
+import { usePortfolioStore } from "./store/usePortfolioStore";
 
 // ─── Error Boundary ───────────────────────────────────────────────────────────
 interface EBState {
@@ -102,19 +106,26 @@ function LoadingScreen() {
 
 // ─── App ──────────────────────────────────────────────────────────────────────
 export default function App() {
+  const currentScene = usePortfolioStore((s) => s.currentScene);
+  const initialPos = SCENE_INITIAL_ORIENTATION[currentScene].position;
+
   return (
     <ErrorBoundary>
       <div style={{ width: "100vw", height: "100vh", position: "relative" }}>
         <Suspense fallback={<LoadingScreen />}>
           <Canvas
             shadows
-            camera={{ fov: 60, near: 0.01, far: 100, position: INITIAL_ORIENTATION.position }}
+            camera={{ fov: 60, near: 0.01, far: 100, position: initialPos }}
             gl={{ antialias: true }}
           >
-            <SceneRoot />
+            {currentScene === "real" ? <SceneRoot /> : <VtuberSceneRoot />}
           </Canvas>
         </Suspense>
 
+        {/* シーン切り替えトグル: 画面上部中央に配置 */}
+        <SceneToggle />
+        {/* シーン切り替えトランジション演出 */}
+        <SceneTransitionOverlay />
         {/* PanelOverlayはCanvas外に配置してHTMLとして自由にスタイリング可能にする */}
         <PanelOverlay />
         {/* ヘルプボタン: 左下に固定表示 */}
