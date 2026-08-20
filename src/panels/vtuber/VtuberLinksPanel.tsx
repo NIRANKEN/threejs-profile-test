@@ -2,9 +2,7 @@ export default function VtuberLinksPanel() {
   return (
     <div className="panel-content">
       <h2 className="panel-title">🔗 Links & Channels</h2>
-      <p className="panel-bio">
-        配信プラットフォームやSNS、コミュニティの公式リンクです。
-      </p>
+      <p className="panel-bio">配信プラットフォームやSNS、コミュニティの公式リンクです。</p>
       <div className="panel-links" style={{ flexDirection: "column", gap: "0.85rem" }}>
         <a
           href="https://www.youtube.com/@MinegishiToppa"

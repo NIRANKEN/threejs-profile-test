@@ -3,8 +3,7 @@ export default function VtuberGuidelinesPanel() {
     <div className="panel-content">
       <h2 className="panel-title">📜 Guidelines</h2>
       <p className="panel-bio">
-        嶺岸とっぱ(Minegishi
-        Toppa)の二次創作および配信利用に関するガイドラインです。
+        嶺岸とっぱ(Minegishi Toppa)の二次創作および配信利用に関するガイドラインです。
       </p>
 
       <div className="panel-skill-group" style={{ marginTop: "1rem" }}>
@@ -20,8 +19,7 @@ export default function VtuberGuidelinesPanel() {
       <div className="panel-skill-group" style={{ marginTop: "1rem" }}>
         <h3 className="panel-skill-category">切り抜き動画の作成・投稿</h3>
         <p className="panel-bio" style={{ marginBottom: "0.5rem" }}>
-          YouTube / Misskey
-          などへの切り抜き動画の投稿は自由に行っていただけます。
+          YouTube / Misskey などへの切り抜き動画の投稿は自由に行っていただけます。
           元配信のURLを動画概要欄または投稿文に明記してください。
         </p>
       </div>
