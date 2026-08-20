@@ -24,12 +24,15 @@ export class GithubOidcStack extends cdk.Stack {
 
     const qualifier = props.bootstrapQualifier ?? "hnb659fds";
 
-    // GitHubのOIDCプロバイダ。アカウント内に既存の場合は
-    // `cdk import` または手動作成済みのARNを参照する形に切り替えること。
-    const provider = new iam.OpenIdConnectProvider(this, "GithubOidcProvider", {
-      url: "https://token.actions.githubusercontent.com",
-      clientIds: ["sts.amazonaws.com"],
-    });
+    // GitHub OIDCプロバイダはAWSアカウントにつき同一URLで1つしか作成できない
+    // （IAMの制約）。他プロジェクトで既に作成済みのことが多いため、新規作成はせず
+    // 既存のものを参照する。ARNはプロバイダのホスト名で決まるため、アカウントIDが
+    // 分かれば固定形式で組み立てられる。
+    const provider = iam.OpenIdConnectProvider.fromOpenIdConnectProviderArn(
+      this,
+      "GithubOidcProvider",
+      `arn:${this.partition}:iam::${this.account}:oidc-provider/token.actions.githubusercontent.com`,
+    );
 
     this.deployRole = new iam.Role(this, "GithubActionsDeployRole", {
       roleName: "github-actions-threejs-profile-deploy",
