@@ -2,18 +2,30 @@ import { useState, useRef, useEffect } from "react";
 import { usePortfolioStore } from "../store/usePortfolioStore";
 import type { SectionId } from "../types/sections";
 
-const NAV_ITEMS: { id: SectionId; label: string; icon: string }[] = [
+const REAL_NAV_ITEMS: { id: SectionId; label: string; icon: string }[] = [
   { id: "profile", label: "Profile", icon: "👤" },
   { id: "skills", label: "Skills", icon: "💻" },
   { id: "works", label: "Works", icon: "📁" },
   { id: "contact", label: "Contact", icon: "✉️" },
 ];
 
+const VTUBER_NAV_ITEMS: { id: SectionId; label: string; icon: string }[] = [
+  { id: "profile", label: "Profile & Lore", icon: "🏔️" },
+  { id: "works", label: "Activities & Works", icon: "🎬" },
+  { id: "guidelines", label: "Guidelines", icon: "📜" },
+  { id: "links", label: "Links", icon: "🔗" },
+];
+
 export default function NavigationMenu() {
   const [isOpen, setIsOpen] = useState(false);
+  const currentScene = usePortfolioStore((s) => s.currentScene);
+  const setSceneMode = usePortfolioStore((s) => s.setSceneMode);
   const setActiveSection = usePortfolioStore((s) => s.setActiveSection);
   const isTransitioning = usePortfolioStore((s) => s.isTransitioning);
+  const isSceneTransitioning = usePortfolioStore((s) => s.isSceneTransitioning);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  const navItems = currentScene === "real" ? REAL_NAV_ITEMS : VTUBER_NAV_ITEMS;
 
   // Handle clicking outside to close
   useEffect(() => {
@@ -38,8 +50,15 @@ export default function NavigationMenu() {
   }, [isOpen]);
 
   const handleItemClick = (sectionId: SectionId) => {
-    if (!isTransitioning) {
+    if (!isTransitioning && !isSceneTransitioning) {
       setActiveSection(sectionId);
+      setIsOpen(false);
+    }
+  };
+
+  const handleSwitchScene = () => {
+    if (!isSceneTransitioning) {
+      setSceneMode(currentScene === "real" ? "virtual" : "real");
       setIsOpen(false);
     }
   };
@@ -60,15 +79,25 @@ export default function NavigationMenu() {
 
       <div className={`nav-dropdown ${isOpen ? "nav-dropdown--open" : ""}`}>
         <div className="nav-dropdown__header">
-          <h3 className="nav-dropdown__title">Menu</h3>
+          <h3 className="nav-dropdown__title">
+            {currentScene === "real" ? "REAL Mode" : "VIRTUAL Mode"}
+          </h3>
+          <button
+            type="button"
+            className="nav-dropdown__switch-btn"
+            onClick={handleSwitchScene}
+            disabled={isSceneTransitioning}
+          >
+            {currentScene === "real" ? "Switch to VIRTUAL 🏔️" : "Switch to REAL 🏢"}
+          </button>
         </div>
         <ul className="nav-list">
-          {NAV_ITEMS.map((item) => (
+          {navItems.map((item) => (
             <li key={item.id}>
               <button
                 className="nav-list__item"
                 onClick={() => handleItemClick(item.id)}
-                disabled={isTransitioning}
+                disabled={isTransitioning || isSceneTransitioning}
               >
                 <span className="nav-list__icon">{item.icon}</span>
                 <span className="nav-list__label">{item.label}</span>

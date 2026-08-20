@@ -1,4 +1,8 @@
-export type SectionId = "profile" | "skills" | "works" | "contact";
+export type SceneMode = "real" | "virtual";
+
+export type RealSectionId = "profile" | "skills" | "works" | "contact";
+export type VtuberSectionId = "profile" | "works" | "guidelines" | "links" | "contact";
+export type SectionId = RealSectionId | VtuberSectionId;
 
 /**
  * 一人称カメラの姿勢（位置 + Yaw + Pitch）
@@ -11,20 +15,19 @@ export interface CameraOrientation {
   pitch: number;
 }
 
-/**
- * GLBモデル座標系メモ (scale=0.913 で各オブジェクトのワールド座標)
- *   Bed      [2.31,  0.57,  1.14]
- *   PC Case  [-1.39, 0.41, -1.61]
- *   Monitor  [-2.31, 1.36, -1.83]
- *   Book     [1.84,  1.12, -1.74]
- *   Room     X:-2.5〜+2.5, Y:0〜3.1, Z:-2.2〜+2.0
- */
+export interface RoomBounds {
+  xMin: number;
+  xMax: number;
+  yFixed: number;
+  zMin: number;
+  zMax: number;
+}
 
 /**
  * position + target から一人称カメラの yaw/pitch を算出する内部ユーティリティ。
  * Three.js の rotation.order='YXZ' 規約に準拠。
  */
-function lookAtToYawPitch(
+export function lookAtToYawPitch(
   position: [number, number, number],
   target: [number, number, number],
 ): { yaw: number; pitch: number } {
@@ -38,20 +41,23 @@ function lookAtToYawPitch(
   return { yaw, pitch };
 }
 
-/**
- * 初期姿勢: 部屋中央手前・目線の高さ・正面（-Z方向）向き
- */
-export const INITIAL_ORIENTATION: CameraOrientation = {
+// ─── REAL (Engineer Room) ───────────────────────────────────────────────────
+
+export const REAL_ROOM_BOUNDS: RoomBounds = {
+  xMin: -2.8,
+  xMax: 2.8,
+  yFixed: 1.6,
+  zMin: -2.0,
+  zMax: 2.0,
+};
+
+export const REAL_INITIAL_ORIENTATION: CameraOrientation = {
   position: [0, 1.6, 1.5],
   yaw: 0,
   pitch: 0,
 };
 
-/**
- * 各セクション選択時の固定視点。
- * 旧 SECTION_CAMERAS の position + target を yaw/pitch に変換して定義。
- */
-export const SECTION_ORIENTATIONS: Record<SectionId, CameraOrientation> = {
+export const REAL_SECTION_ORIENTATIONS: Record<RealSectionId, CameraOrientation> = {
   // Profile: ベッドを見る
   profile: {
     position: [-1.0, 1.6, -0.36],
@@ -72,4 +78,68 @@ export const SECTION_ORIENTATIONS: Record<SectionId, CameraOrientation> = {
     position: [1.5, 1.6, 0.5],
     ...lookAtToYawPitch([1.5, 1.6, 0.5], [1.8, 1.1, -1.7]),
   },
+};
+
+// ─── VIRTUAL (Vtuber Mountain Movie Lounge) ──────────────────────────────────
+
+export const VTUBER_ROOM_BOUNDS: RoomBounds = {
+  xMin: -3.2,
+  xMax: 3.2,
+  yFixed: 1.6,
+  zMin: -4.8,
+  zMax: 1.8,
+};
+
+export const VTUBER_INITIAL_ORIENTATION: CameraOrientation = {
+  position: [0, 1.6, 1.0],
+  yaw: 0,
+  pitch: 0,
+};
+
+export const VTUBER_SECTION_ORIENTATIONS: Record<VtuberSectionId, CameraOrientation> = {
+  // Profile: ソファ・キャラクターエリアを見る
+  profile: {
+    position: [0, 1.4, 1.2],
+    ...lookAtToYawPitch([0, 1.4, 1.2], [0, 0.6, -0.18]),
+  },
+  // Works: 正面のムービースクリーン・シアター壁を見る
+  works: {
+    position: [0, 1.6, -1.5],
+    ...lookAtToYawPitch([0, 1.6, -1.5], [0, 1.8, -5.8]),
+  },
+  // Guidelines: ラウンジのテーブル・ルール案内を見る
+  guidelines: {
+    position: [1.6, 1.5, -0.4],
+    ...lookAtToYawPitch([1.6, 1.5, -0.4], [2.6, 0.7, -1.4]),
+  },
+  // Links: ランタン・サイドラック・出入口を見る
+  links: {
+    position: [-1.6, 1.5, -0.4],
+    ...lookAtToYawPitch([-1.6, 1.5, -0.4], [-2.6, 1.2, -1.4]),
+  },
+  // Contact (互換性)
+  contact: {
+    position: [1.2, 1.5, 0.5],
+    ...lookAtToYawPitch([1.2, 1.5, 0.5], [0, 1.0, -1.0]),
+  },
+};
+
+// ─── 互換エイリアス & シーン別マップ ─────────────────────────────────────────
+
+export const INITIAL_ORIENTATION = REAL_INITIAL_ORIENTATION;
+export const SECTION_ORIENTATIONS = REAL_SECTION_ORIENTATIONS;
+
+export const SCENE_INITIAL_ORIENTATION: Record<SceneMode, CameraOrientation> = {
+  real: REAL_INITIAL_ORIENTATION,
+  virtual: VTUBER_INITIAL_ORIENTATION,
+};
+
+export const SCENE_ROOM_BOUNDS: Record<SceneMode, RoomBounds> = {
+  real: REAL_ROOM_BOUNDS,
+  virtual: VTUBER_ROOM_BOUNDS,
+};
+
+export const SCENE_SECTION_ORIENTATIONS: Record<SceneMode, Record<string, CameraOrientation>> = {
+  real: REAL_SECTION_ORIENTATIONS as Record<string, CameraOrientation>,
+  virtual: VTUBER_SECTION_ORIENTATIONS as Record<string, CameraOrientation>,
 };
