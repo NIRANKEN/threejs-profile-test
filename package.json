@@ -11,7 +11,8 @@
     "lint": "oxlint && eslint .",
     "format": "oxfmt .",
     "format:check": "oxfmt --check .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "prepare": "husky"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.8",
@@ -36,6 +37,7 @@
     "eslint-plugin-oxlint": "^1.78.0",
     "eslint-plugin-react-refresh": "^0.5.4",
     "globals": "^17.11.0",
+    "husky": "^9.1.7",
     "jsdom": "^29.1.1",
     "oxfmt": "^0.52.0",
     "oxlint": "^1.78.0",

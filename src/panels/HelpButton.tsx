@@ -66,7 +66,8 @@ export default function HelpButton() {
               <li className="help-list__item">
                 <span className="help-list__icon">🖱️</span>
                 <span>
-                  <strong>左ドラッグ</strong>で視点（カメラの向き）を操作できます
+                  <strong>左ドラッグ</strong>
+                  で視点（カメラの向き）を操作できます
                 </span>
               </li>
               <li className="help-list__item">
@@ -127,6 +128,29 @@ export default function HelpButton() {
                 rel="noopener noreferrer"
               >
                 Waven
+              </a>{" "}
+              (
+              <a
+                href="http://creativecommons.org/licenses/by/4.0/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                CC BY 4.0
+              </a>
+              )
+            </p>
+            <p className="help-credit-text">
+              3D Model:{" "}
+              <a
+                href="https://sketchfab.com/3d-models/mountain-movie-lounge-d0336afb3af447dd896b3f17f06751d9"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                &ldquo;Mountain Movie Lounge&rdquo;
+              </a>{" "}
+              by{" "}
+              <a href="https://sketchfab.com/ElinHohler" target="_blank" rel="noopener noreferrer">
+                Elin
               </a>{" "}
               (
               <a
