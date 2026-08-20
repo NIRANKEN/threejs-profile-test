@@ -48,6 +48,11 @@ export class FrontendStack extends cdk.Stack {
       priceClass: cloudfront.PriceClass.PRICE_CLASS_100,
       domainNames: siteDomain ? [siteDomain] : undefined,
       certificate,
+      // カスタム証明書がある場合のみ有効（CloudFrontのデフォルト証明書使用時は
+      // TLSv1固定でこの設定を上書きできないため、certificate未指定時は省略する）。
+      minimumProtocolVersion: certificate
+        ? cloudfront.SecurityPolicyProtocol.TLS_V1_2_2021
+        : undefined,
       defaultBehavior: {
         origin: origins.S3BucketOrigin.withOriginAccessControl(siteBucket),
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
