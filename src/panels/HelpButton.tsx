@@ -107,6 +107,38 @@ export default function HelpButton() {
               ))}
             </div>
           </section>
+
+          {/* 素材クレジット */}
+          <section className="help-section">
+            <h3 className="help-section__title">素材クレジット</h3>
+            <p className="help-credit-text">
+              3D Model:{" "}
+              <a
+                href="https://sketchfab.com/3d-models/low-poly-gaming-bedroom-3799700f186a4104ae570ea0c92a82fd"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                &ldquo;Low Poly Gaming Bedroom&rdquo;
+              </a>{" "}
+              by{" "}
+              <a
+                href="https://sketchfab.com/wavenquack24"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Waven
+              </a>{" "}
+              (
+              <a
+                href="http://creativecommons.org/licenses/by/4.0/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                CC BY 4.0
+              </a>
+              )
+            </p>
+          </section>
         </div>
       </div>
     </>

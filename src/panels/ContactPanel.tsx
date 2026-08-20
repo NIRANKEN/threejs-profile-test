@@ -10,26 +10,25 @@ export default function ContactPanel() {
           rel="noreferrer"
           className="panel-contact-item"
         >
-          <span className="panel-contact-icon">🐙</span>
+          <img
+            src="/images/github.png"
+            alt="GitHub"
+            className="panel-contact-icon-img"
+          />
           <span>GitHub</span>
         </a>
         <a
-          href="https://twitter.com"
+          href="https://misskey.io/@niranken"
           target="_blank"
           rel="noreferrer"
           className="panel-contact-item"
         >
-          <span className="panel-contact-icon">🐦</span>
-          <span>Twitter / X</span>
-        </a>
-        <a
-          href="https://linkedin.com"
-          target="_blank"
-          rel="noreferrer"
-          className="panel-contact-item"
-        >
-          <span className="panel-contact-icon">💼</span>
-          <span>LinkedIn</span>
+          <img
+            src="/images/misskey.png"
+            alt="Misskey"
+            className="panel-contact-icon-img"
+          />
+          <span>Misskey</span>
         </a>
       </div>
     </div>

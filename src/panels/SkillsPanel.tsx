@@ -1,8 +1,22 @@
 const SKILLS = [
   { category: "Frontend", items: ["React", "TypeScript", "Vite", "Flutter"] },
   { category: "3D / WebGL", items: ["Three.js", "React Three Fiber", "GLSL"] },
-  { category: "Backend", items: ["Node.js", "Go", "Python"] },
-  { category: "Tools", items: ["Git", "Figma", "Blender"] },
+  {
+    category: "Backend",
+    items: ["NodeJS", "Go", "Python", "Firebase", "AWS", "SQL", "Bash"],
+  },
+  {
+    category: "Tools",
+    items: [
+      "Git",
+      "GitHub Actions",
+      "Docker",
+      "Linux",
+      "Figma",
+      "Claude Code",
+      "Antigravity",
+    ],
+  },
 ];
 
 export default function SkillsPanel() {

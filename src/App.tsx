@@ -6,6 +6,7 @@ import PanelOverlay from "./panels/PanelOverlay";
 import HelpButton from "./panels/HelpButton";
 import ResetButton from "./panels/ResetButton";
 import NavigationMenu from "./panels/NavigationMenu";
+import CreditButton from "./panels/CreditButton";
 import { DevHud } from "./scene/DevTools";
 import { INITIAL_ORIENTATION } from "./types/sections";
 
@@ -120,6 +121,8 @@ export default function App() {
         <HelpButton />
         {/* リセットボタン: ヘルプボタンの上に表示 */}
         <ResetButton />
+        {/* クレジットボタン: 右下に表示 */}
+        <CreditButton />
         {/* ナビゲーションメニュー: 左上に表示 */}
         <NavigationMenu />
         {/* 開発環境のみ: カメラ座標 HUD */}
