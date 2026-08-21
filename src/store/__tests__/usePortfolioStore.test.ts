@@ -46,13 +46,13 @@ describe("usePortfolioStore", () => {
 
   describe("setSceneMode", () => {
     it("シーン切り替え時に currentScene が更新され、activeSection がリセットされる", () => {
-      usePortfolioStore.setState({ activeSection: "works" });
+      usePortfolioStore.setState({ currentScene: "virtual", activeSection: "works" });
       const store = usePortfolioStore.getState();
 
-      store.setSceneMode("virtual");
+      store.setSceneMode("real");
 
       const state = usePortfolioStore.getState();
-      expect(state.currentScene).toBe("virtual");
+      expect(state.currentScene).toBe("real");
       expect(state.activeSection).toBeNull();
       expect(state.isSceneTransitioning).toBe(true);
     });
@@ -61,6 +61,15 @@ describe("usePortfolioStore", () => {
       const store = usePortfolioStore.getState();
       store.setSceneMode("real");
       expect(usePortfolioStore.getState().isSceneTransitioning).toBe(false);
+    });
+
+    it("REAL から VIRTUAL への遷移は禁止される", () => {
+      const store = usePortfolioStore.getState();
+      store.setSceneMode("virtual");
+
+      const state = usePortfolioStore.getState();
+      expect(state.currentScene).toBe("real");
+      expect(state.isSceneTransitioning).toBe(false);
     });
   });
 

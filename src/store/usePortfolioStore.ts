@@ -70,6 +70,10 @@ export const usePortfolioStore = create<PortfolioState>((set, get) => {
       const { currentScene } = get();
       if (currentScene === scene) return;
 
+      // REAL -> VIRTUAL への遷移はURL直接入力（初期ロード）のみ許可し、
+      // ボタン操作や履歴操作（popstate）による動的な遷移は禁止する
+      if (currentScene === "real" && scene === "virtual") return;
+
       if (!options?.skipHistory) {
         updateSceneUrl(scene, options?.replace ?? false);
       }

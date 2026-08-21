@@ -82,14 +82,16 @@ export default function NavigationMenu() {
           <h3 className="nav-dropdown__title">
             {currentScene === "real" ? "REAL Mode" : "VIRTUAL Mode"}
           </h3>
-          <button
-            type="button"
-            className="nav-dropdown__switch-btn"
-            onClick={handleSwitchScene}
-            disabled={isSceneTransitioning}
-          >
-            {currentScene === "real" ? "Switch to VIRTUAL 🏔️" : "Switch to REAL 🏢"}
-          </button>
+          {currentScene === "virtual" && (
+            <button
+              type="button"
+              className="nav-dropdown__switch-btn"
+              onClick={handleSwitchScene}
+              disabled={isSceneTransitioning}
+            >
+              Switch to REAL 🏢
+            </button>
+          )}
         </div>
         <ul className="nav-list">
           {navItems.map((item) => (

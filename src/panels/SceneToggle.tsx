@@ -32,7 +32,7 @@ export default function SceneToggle() {
         aria-selected={currentScene === "virtual"}
         className={`scene-toggle-btn ${currentScene === "virtual" ? "scene-toggle-btn--active" : ""}`}
         onClick={() => handleToggle("virtual")}
-        disabled={isSceneTransitioning}
+        disabled={isSceneTransitioning || currentScene === "real"}
       >
         <span className="scene-toggle-btn__icon">🏔️</span>
         <span className="scene-toggle-btn__label">VIRTUAL</span>
