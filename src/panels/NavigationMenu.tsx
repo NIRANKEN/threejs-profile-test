@@ -10,7 +10,7 @@ const REAL_NAV_ITEMS: { id: SectionId; label: string; icon: string }[] = [
 ];
 
 const VTUBER_NAV_ITEMS: { id: SectionId; label: string; icon: string }[] = [
-  { id: "profile", label: "Profile & Lore", icon: "🏔️" },
+  { id: "profile", label: "Profile", icon: "🏔️" },
   { id: "works", label: "Activities & Works", icon: "🎬" },
   { id: "guidelines", label: "Guidelines", icon: "📜" },
   { id: "links", label: "Links", icon: "🔗" },

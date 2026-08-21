@@ -13,14 +13,14 @@ export default function VtuberLights() {
   return (
     <>
       {/* 全体環境光: 夕暮れ〜夜の温かい木造ロッジの雰囲気 */}
-      <hemisphereLight args={HEMI_LIGHT_ARGS} intensity={0.6} />
+      <hemisphereLight args={HEMI_LIGHT_ARGS} intensity={1.1} />
 
       {/* ペンダントライト（ペンダントシェード内部の電球） */}
       <pointLight
         position={PENDANT_LIGHT_POS}
         color={0xffa347}
-        intensity={45}
-        distance={10}
+        intensity={75}
+        distance={12}
         decay={2}
         castShadow
         shadow-mapSize={SHADOW_MAP_SIZE}
@@ -31,13 +31,13 @@ export default function VtuberLights() {
       <pointLight
         position={SCREEN_GLOW_POS}
         color={0x6699ff}
-        intensity={20}
+        intensity={30}
         distance={8}
         decay={2}
       />
 
       {/* 外窓からの柔らかな外光（山岳の夜空・夕暮れ光） */}
-      <directionalLight position={WINDOW_LIGHT_POS} color={0x7090bf} intensity={0.8} castShadow />
+      <directionalLight position={WINDOW_LIGHT_POS} color={0x7090bf} intensity={1.4} castShadow />
     </>
   );
 }

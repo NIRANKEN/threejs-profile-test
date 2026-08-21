@@ -13,6 +13,11 @@ const SHARED_HIGHLIGHT_MATERIAL = new THREE.MeshBasicMaterial({
   opacity: 0.3,
   depthWrite: false,
   side: THREE.DoubleSide,
+  // 薄い平面オブジェクトと同一平面上に重なるとz-fightingでジャギーになるため、
+  // カメラ側にわずかに押し出して competing depth を回避する
+  polygonOffset: true,
+  polygonOffsetFactor: -4,
+  polygonOffsetUnits: -4,
 });
 
 interface Props {
@@ -51,6 +56,9 @@ export default function InteractiveObject({ sectionId, onClick, highlightColor, 
           opacity: 0.3,
           depthWrite: false,
           side: THREE.DoubleSide,
+          polygonOffset: true,
+          polygonOffsetFactor: -4,
+          polygonOffsetUnits: -4,
         })
       : SHARED_HIGHLIGHT_MATERIAL;
 

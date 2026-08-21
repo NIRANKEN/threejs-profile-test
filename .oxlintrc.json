@@ -158,6 +158,9 @@
               "displacementMap",
               "transparent",
               "opacity",
+              "alphaTest",
+              "side",
+              "toneMapped",
               "dispose",
               "shadow-mapSize",
               "shadow-bias"

@@ -97,10 +97,10 @@ export const VTUBER_INITIAL_ORIENTATION: CameraOrientation = {
 };
 
 export const VTUBER_SECTION_ORIENTATIONS: Record<VtuberSectionId, CameraOrientation> = {
-  // Profile: ソファ・キャラクターエリアを見る
+  // Profile: 部屋の中心からソファ・キャラクターエリアを見る
   profile: {
-    position: [0, 1.4, 1.2],
-    ...lookAtToYawPitch([0, 1.4, 1.2], [0, 0.6, -0.18]),
+    position: [-0.3, 1.6, -2.1],
+    ...lookAtToYawPitch([-1.4, 1.6, -3.3], [0.4, 0.8, -1.3]),
   },
   // Works: 正面のムービースクリーン・シアター壁を見る
   works: {
