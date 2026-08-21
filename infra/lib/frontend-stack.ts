@@ -91,12 +91,27 @@ export class FrontendStack extends cdk.Stack {
         s3deploy.CacheControl.fromString("immutable"),
       ],
       prune: false,
+      memoryLimit: 1024,
     });
 
-    // index.html・モデル(.glb)など非ハッシュ付きファイルは再検証必須で配信し、
+    // 3Dモデル(.glb)は内容が変わらない前提のため、ハッシュ付きアセットと同様に
+    // 長期キャッシュで配信し、デプロイのたびのCloudFront invalidate対象からも外す。
+    const modelsDeployment = new s3deploy.BucketDeployment(this, "DeployModels", {
+      sources: [s3deploy.Source.asset(path.join(distPath, "models"))],
+      destinationBucket: siteBucket,
+      destinationKeyPrefix: "models",
+      cacheControl: [
+        s3deploy.CacheControl.maxAge(cdk.Duration.days(365)),
+        s3deploy.CacheControl.fromString("immutable"),
+      ],
+      prune: false,
+      memoryLimit: 1024,
+    });
+
+    // index.htmlなど非ハッシュ付きファイルは再検証必須で配信し、
     // 最後にCloudFrontのキャッシュを全体invalidateする。
     const rootFilesDeployment = new s3deploy.BucketDeployment(this, "DeployRootFiles", {
-      sources: [s3deploy.Source.asset(distPath, { exclude: ["assets/**"] })],
+      sources: [s3deploy.Source.asset(distPath, { exclude: ["assets/**", "models/**"] })],
       destinationBucket: siteBucket,
       cacheControl: [
         s3deploy.CacheControl.maxAge(cdk.Duration.seconds(0)),
@@ -105,8 +120,10 @@ export class FrontendStack extends cdk.Stack {
       prune: false,
       distribution,
       distributionPaths: ["/*"],
+      memoryLimit: 1024,
     });
     rootFilesDeployment.node.addDependency(hashedAssetsDeployment);
+    rootFilesDeployment.node.addDependency(modelsDeployment);
 
     if (siteDomain && hostedZoneDomain) {
       const zone = route53.HostedZone.fromLookup(this, "HostedZone", {
