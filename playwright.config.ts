@@ -12,10 +12,15 @@ export default defineConfig({
 
   use: {
     baseURL: "http://localhost:5173",
-    // headless Chromium で WebGL/Three.js を動作させるためのフラグ
+    // headless Chromium で WebGL/Three.js を動作させるためのフラグ。
+    // "--use-angle=gl" は実GPUが無いLinux CIだとMesaの低速なソフトウェアGL
+    // (llvmpipe) にフォールバックし、連続したポインタ移動を伴うテストが
+    // ハングしたためSwiftShaderを明示指定する（全環境で高速・安定動作）
     launchOptions: {
       args: [
-        "--use-angle=gl", // macOS: ANGLE GL バックエンドを使用
+        "--use-gl=angle",
+        "--use-angle=swiftshader-webgl",
+        "--enable-unsafe-swiftshader",
         "--enable-webgl",
         "--ignore-gpu-blocklist", // GPU ブロックリストを無視してハードウェア描画を強制
         "--disable-gpu-sandbox",
