@@ -3,6 +3,16 @@ name: Deploy to AWS
 on:
   push:
     branches: [main]
+    paths:
+      - "src/**"
+      - "public/**"
+      - "index.html"
+      - "vite.config.ts"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "infra/**"
+      - "!infra/README.md"
+      - ".github/workflows/deploy.yml"
   workflow_dispatch: {}
 
 permissions:
