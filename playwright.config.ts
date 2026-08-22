@@ -2,18 +2,32 @@ import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
   testDir: "./e2e",
-  timeout: 60_000, // Three.js + GLB ロード時間を考慮
+  // CI (GitHub Actions ubuntu-latest) はソフトウェアレンダリングでローカルより低速なため、
+  // マウスドラッグ操作を伴うテストがタイムアウトすることがある。CIのみ余裕を持たせる。
+  // 特にピッチが±70°境界付近（床を見下ろす角度）に張り付く極端なドラッグは
+  // フレームあたりの描画コストが大きく増えるため、さらに長めに確保する
+  timeout: process.env.CI ? 180_000 : 60_000, // Three.js + GLB ロード時間を考慮
   expect: { timeout: 10_000 },
   fullyParallel: false, // Three.js の初期化を安定させるため逐次実行
-  retries: 0,
+  retries: process.env.CI ? 1 : 0, // CI環境のレンダリング速度のばらつきを吸収する
   reporter: "line",
 
   use: {
     baseURL: "http://localhost:5173",
-    // headless Chromium で WebGL/Three.js を動作させるためのフラグ
+    // CIはPlaywrightが毎回ダウンロードする最新のChrome for Testingビルドではなく、
+    // Ubuntuランナーに公式リポジトリからインストールされる安定版Chromeを使う。
+    // 特定のChrome for Testingビルドで、下方向ドラッグ中にSwiftShaderの描画が
+    // ハングする再現性のある問題が確認されたため（ローカルの旧Chromiumでは非再現）
+    ...(process.env.CI ? { channel: "chrome" as const } : {}),
+    // headless Chromium で WebGL/Three.js を動作させるためのフラグ。
+    // "--use-angle=gl" は実GPUが無いLinux CIだとMesaの低速なソフトウェアGL
+    // (llvmpipe) にフォールバックし、連続したポインタ移動を伴うテストが
+    // ハングしたためSwiftShaderを明示指定する（全環境で高速・安定動作）
     launchOptions: {
       args: [
-        "--use-angle=gl", // macOS: ANGLE GL バックエンドを使用
+        "--use-gl=angle",
+        "--use-angle=swiftshader-webgl",
+        "--enable-unsafe-swiftshader",
         "--enable-webgl",
         "--ignore-gpu-blocklist", // GPU ブロックリストを無視してハードウェア描画を強制
         "--disable-gpu-sandbox",
