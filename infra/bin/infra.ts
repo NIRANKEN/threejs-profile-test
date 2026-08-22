@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import * as cdk from "aws-cdk-lib";
 import { CertificateStack } from "../lib/certificate-stack";
+import { E2eScreenshotsStack } from "../lib/e2e-screenshots-stack";
 import { FrontendStack } from "../lib/frontend-stack";
 import { GithubOidcStack } from "../lib/github-oidc-stack";
 
@@ -11,13 +12,23 @@ const env: cdk.Environment = {
   region: process.env.CDK_DEFAULT_REGION ?? "ap-northeast-1",
 };
 
+const githubRepo: string = app.node.tryGetContext("githubRepo") ?? "NIRANKEN/threejs-profile-test";
+
 // GitHub Actions からOIDCでAssumeするデプロイ専用ロール。
 // 管理者権限を持つローカル環境から一度だけ `cdk deploy GithubOidcStack` する。
 new GithubOidcStack(app, "GithubOidcStack", {
   env,
-  githubRepo: app.node.tryGetContext("githubRepo") ?? "NIRANKEN/threejs-profile-test",
+  githubRepo,
   allowedBranch: app.node.tryGetContext("allowedBranch") ?? "main",
   allowedEnvironment: app.node.tryGetContext("allowedEnvironment") ?? "production",
+});
+
+// E2E CIが撮影したスクリーンショットのアップロード先バケット + PRごとにOIDCで
+// Assumeするアップロード専用ロール。他スタックへの依存はなく単独でデプロイ可能。
+// 管理者権限を持つローカル環境から一度だけ `cdk deploy E2eScreenshotsStack` する。
+new E2eScreenshotsStack(app, "E2eScreenshotsStack", {
+  env,
+  githubRepo,
 });
 
 // カスタムドメインを使う場合は `-c siteDomain=portfolio.example.com` のように指定する。

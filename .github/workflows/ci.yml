@@ -46,6 +46,10 @@ jobs:
 
   e2e-test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -69,3 +73,52 @@ jobs:
 
       - name: E2E tests
         run: pnpm test:e2e
+
+      - name: Capture screenshots of main screens
+        run: pnpm exec playwright test e2e/screenshots.spec.ts
+
+      - name: Configure AWS credentials
+        if: always()
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_E2E_SCREENSHOT_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'ap-northeast-1' }}
+
+      - name: Upload screenshots to S3
+        if: always()
+        run: pnpm screenshots:upload
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          E2E_SCREENSHOT_BUCKET: ${{ vars.E2E_SCREENSHOT_BUCKET_NAME }}
+
+      - name: Post screenshot links to PR
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require("fs");
+            const marker = "<!-- e2e-screenshots -->";
+            const body = fs.readFileSync("e2e-screenshots/pr-comment.md", "utf-8");
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find((c) => c.body?.includes(marker));
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
