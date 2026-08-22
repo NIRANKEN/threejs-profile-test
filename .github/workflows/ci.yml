@@ -3,6 +3,7 @@ name: CI
 on:
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -44,7 +45,57 @@ jobs:
       - name: Unit tests
         run: pnpm test
 
+  # spec ファイルごとに別ランナーで並列実行する。playwright.config.ts の
+  # fullyParallel:false（Three.js初期化の安定性のため）はジョブ内では維持しつつ、
+  # ジョブ自体をmatrixで分割することでCIの総所要時間を短縮する。
   e2e-test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        spec:
+          - e2e/first-person.spec.ts
+          - e2e/navigation-and-panels.spec.ts
+          - e2e/screenshots.spec.ts
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chrome
+
+      - name: E2E tests
+        run: pnpm exec playwright test "${{ matrix.spec }}"
+
+      # screenshots.spec.ts の出力のみ、後続のアップロードジョブへ渡す。
+      - name: Upload screenshots artifact
+        if: always() && matrix.spec == 'e2e/screenshots.spec.ts'
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-screenshots
+          path: e2e-screenshots/
+          retention-days: 1
+          if-no-files-found: ignore
+
+  # screenshots.spec.ts の撮影結果をS3にアップロードし、署名付きURLをPRコメントに
+  # 投稿する。matrix分割後は成果物をジョブ間で受け渡す必要があるため別ジョブに分離。
+  e2e-screenshots-upload:
+    needs: e2e-test
+    if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -68,31 +119,32 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Install Playwright browsers
-        run: pnpm exec playwright install --with-deps chrome
-
-      - name: E2E tests
-        run: pnpm test:e2e
-
-      - name: Capture screenshots of main screens
-        run: pnpm exec playwright test e2e/screenshots.spec.ts
+      # screenshots.spec.ts 自体が失敗しアーティファクトが存在しない場合は
+      # 後続ステップをまとめてスキップする（ジョブ全体を失敗させない）。
+      - name: Download screenshots artifact
+        id: download
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: e2e-screenshots
+          path: e2e-screenshots
 
       - name: Configure AWS credentials
-        if: always()
+        if: steps.download.outcome == 'success'
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_E2E_SCREENSHOT_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION || 'ap-northeast-1' }}
 
       - name: Upload screenshots to S3
-        if: always()
+        if: steps.download.outcome == 'success'
         run: pnpm screenshots:upload
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           E2E_SCREENSHOT_BUCKET: ${{ vars.E2E_SCREENSHOT_BUCKET_NAME }}
 
       - name: Post screenshot links to PR
-        if: always() && hashFiles('e2e-screenshots/pr-comment.md') != ''
+        if: steps.download.outcome == 'success' && hashFiles('e2e-screenshots/pr-comment.md') != ''
         uses: actions/github-script@v7
         with:
           script: |
