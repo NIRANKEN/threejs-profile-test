@@ -92,7 +92,7 @@ jobs:
           E2E_SCREENSHOT_BUCKET: ${{ vars.E2E_SCREENSHOT_BUCKET_NAME }}
 
       - name: Post screenshot links to PR
-        if: always()
+        if: always() && hashFiles('e2e-screenshots/pr-comment.md') != ''
         uses: actions/github-script@v7
         with:
           script: |
