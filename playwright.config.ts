@@ -2,10 +2,12 @@ import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
   testDir: "./e2e",
-  timeout: 60_000, // Three.js + GLB ロード時間を考慮
+  // CI (GitHub Actions ubuntu-latest) はソフトウェアレンダリングでローカルより低速なため、
+  // マウスドラッグ操作を伴うテストがタイムアウトすることがある。CIのみ余裕を持たせる
+  timeout: process.env.CI ? 90_000 : 60_000, // Three.js + GLB ロード時間を考慮
   expect: { timeout: 10_000 },
   fullyParallel: false, // Three.js の初期化を安定させるため逐次実行
-  retries: 0,
+  retries: process.env.CI ? 1 : 0, // CI環境のレンダリング速度のばらつきを吸収する
   reporter: "line",
 
   use: {

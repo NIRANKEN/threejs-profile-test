@@ -50,20 +50,23 @@ test.describe("クレジットダイアログ", () => {
     await waitForScene(page);
   });
 
+  // HelpButton のダイアログにも同名の見出し・閉じるボタンが常時DOM上に存在するため、
+  // 開いた状態を示す `.credit-dialog--open` でスコープして曖昧な一致を避ける。
   test("開いて閉じるボタンで閉じられること", async ({ page }) => {
     await page.getByRole("button", { name: "3Dモデルのクレジット情報を表示" }).click();
-    await expect(page.getByRole("heading", { name: "素材クレジット" })).toBeVisible();
+    const dialog = page.locator(".credit-dialog--open");
+    await expect(dialog.getByRole("heading", { name: "素材クレジット" })).toBeVisible();
 
-    await page.getByRole("button", { name: "閉じる" }).click();
-    await expect(page.getByRole("heading", { name: "素材クレジット" })).not.toBeVisible();
+    await dialog.getByRole("button", { name: "閉じる" }).click();
+    await expect(page.locator(".credit-dialog--open")).toHaveCount(0);
   });
 
   test("Escape キーで閉じられること", async ({ page }) => {
     await page.getByRole("button", { name: "3Dモデルのクレジット情報を表示" }).click();
-    await expect(page.getByRole("heading", { name: "素材クレジット" })).toBeVisible();
+    await expect(page.locator(".credit-dialog--open")).toBeVisible();
 
     await page.keyboard.press("Escape");
-    await expect(page.getByRole("heading", { name: "素材クレジット" })).not.toBeVisible();
+    await expect(page.locator(".credit-dialog--open")).toHaveCount(0);
   });
 });
 
