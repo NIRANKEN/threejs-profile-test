@@ -65,7 +65,6 @@ export default function InteractiveObject({ sectionId, onClick, highlightColor, 
     };
   }, []);
 
-
   // マウント時に一度だけクローンを生成（ホバーのたびに生成しない）
   useEffect(() => {
     if (!groupRef.current || !highlightGroupRef.current) return;
@@ -90,7 +89,6 @@ export default function InteractiveObject({ sectionId, onClick, highlightColor, 
       // They are shared at the module level.
     };
   }, [highlightColor]);
-
 
   // Event-driven direct mutation: update visibility on transition state change
   useEffect(() => {
