@@ -144,7 +144,7 @@ export function RoomModel() {
           </group>
 
           {/* ── Profile: ベッド ── */}
-          <InteractiveObject sectionId="profile">
+          <InteractiveObject sectionId="profile" ariaLabel="プロフィール詳細">
             <group position={[2.529, 0.623, 1.252]} rotation={[0, Math.PI / 2, 0]} scale={1.085}>
               <mesh geometry={nodes.Object_15.geometry} material={materials.Pillow} />
               <mesh geometry={nodes.Object_16.geometry} material={materials.Wood1} />
@@ -176,7 +176,7 @@ export function RoomModel() {
           </group>
 
           {/* ── Skills: PCケース ── */}
-          <InteractiveObject sectionId="skills">
+          <InteractiveObject sectionId="skills" ariaLabel="スキル詳細">
             <group position={[-1.523, 0.448, -1.759]} rotation={[0, -Math.PI / 2, 0]}>
               <mesh geometry={nodes.Object_30.geometry} material={materials.Case} />
               <mesh geometry={nodes.Object_31.geometry} material={materials.Case2} />
@@ -193,7 +193,7 @@ export function RoomModel() {
           </InteractiveObject>
 
           {/* ── Works: モニター ── */}
-          <InteractiveObject sectionId="works">
+          <InteractiveObject sectionId="works" ariaLabel="制作物詳細">
             <group position={[-2.53, 1.485, -2.006]}>
               <mesh geometry={nodes.Object_42.geometry} material={materials.Monitor} />
               <mesh geometry={nodes.Object_43.geometry} material={materials.BlueLight} />
@@ -260,7 +260,7 @@ export function RoomModel() {
           </group>
 
           {/* ── Contact: 本 ── */}
-          <InteractiveObject sectionId="contact">
+          <InteractiveObject sectionId="contact" ariaLabel="コンタクト詳細">
             <group position={[2.014, 1.227, -1.909]} rotation={[Math.PI, -1.388, Math.PI]}>
               <mesh geometry={nodes.Object_68.geometry} material={materials.BookCover} />
               <mesh geometry={nodes.Object_69.geometry} material={materials.Pages} />
