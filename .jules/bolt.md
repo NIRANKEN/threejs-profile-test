@@ -1,3 +1,5 @@
 ## 2024-05-19 - [BakeShadows Optimization] **Learning:** Static scenes benefit heavily from BakeShadows. **Action:** Added BakeShadows when no dynamic lights or moving objects that cast shadows exist.
 
 ## 2026-05-02 - [Module-Level Shared Materials] **Learning:** Repeated instantiations of the same THREE.Material via useMemo across multiple identical components increase VRAM usage and put pressure on garbage collection (GC) and .dispose() cleanup inside useEffect. **Action:** Instantiate shared standard/basic materials at the module scope outside of the React component whenever possible to ensure true sharing, reduce VRAM footprint, and bypass complex component-level GC handling.
+
+## 2024-05-23 - [Preload Optimization] **Learning:** Using `<Preload all />` from `@react-three/drei` inside a `<Suspense>` boundary forces upfront WebGL material and shader compilation. This is crucial for avoiding frame drops and stuttering when scene elements first enter the camera frustum or become visible. **Action:** Added `<Preload all />` inside the main `<Suspense>` boundary in `SceneRoot.tsx`.
