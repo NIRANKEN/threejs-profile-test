@@ -1,0 +1,3 @@
+# Palette's UX Journal
+
+## 2025-02-27 - [3D Accessibility] **Learning:** 3D Web applications often lack screen reader support and keyboard navigability out of the box. Users relying on these tools cannot interact with or discover `onClick` behaviors mapped directly onto meshes or groups. **Action:** Introduced `@react-three/drei`'s `<Html>` component to embed visually hidden `<button>` elements (`opacity: 0`) near interactive 3D objects. This provides native `aria-label` support and allows the objects to receive keyboard focus via the Tab key, triggering the same visual highlight (`onFocus`) as pointer hover events (`onPointerOver`), drastically improving accessibility without compromising the aesthetic.
