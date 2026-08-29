@@ -29,7 +29,13 @@ interface Props {
   children: ReactNode;
 }
 
-export default function InteractiveObject({ sectionId, onClick, highlightColor, ariaLabel, children }: Props) {
+export default function InteractiveObject({
+  sectionId,
+  onClick,
+  highlightColor,
+  ariaLabel,
+  children,
+}: Props) {
   const hoveredRef = useRef(false);
   const groupRef = useRef<THREE.Group>(null);
   const highlightGroupRef = useRef<THREE.Group>(null);
@@ -103,7 +109,7 @@ export default function InteractiveObject({ sectionId, onClick, highlightColor, 
   }
 
   function handlePointerOver(e?: ThreeEvent<PointerEvent> | React.FocusEvent) {
-    if (e && 'stopPropagation' in e) {
+    if (e && "stopPropagation" in e) {
       e.stopPropagation();
     }
     if (!hoveredRef.current && !isSceneTransitioning) {
@@ -124,7 +130,7 @@ export default function InteractiveObject({ sectionId, onClick, highlightColor, 
       <group ref={groupRef}>{children}</group>
       <group ref={highlightGroupRef} />
       {/* Htmlコンポーネントによるスクリーンリーダー用ラベルおよびキーボードナビゲーション対応 */}
-      <Html distanceFactor={10} style={{ opacity: 0, pointerEvents: 'none' }}>
+      <Html distanceFactor={10} style={{ opacity: 0, pointerEvents: "none" }}>
         <button
           aria-label={label}
           onClick={(e) => {
@@ -133,7 +139,7 @@ export default function InteractiveObject({ sectionId, onClick, highlightColor, 
           }}
           onFocus={handlePointerOver}
           onBlur={handlePointerOut}
-          style={{ pointerEvents: 'auto' }}
+          style={{ pointerEvents: "auto" }}
         />
       </Html>
     </group>
