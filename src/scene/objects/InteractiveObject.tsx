@@ -36,7 +36,7 @@ function getHighlightMaterial(color?: number) {
         polygonOffset: true,
         polygonOffsetFactor: -4,
         polygonOffsetUnits: -4,
-      })
+      }),
     );
   }
   return HIGHLIGHT_MATERIAL_CACHE.get(color)!;
