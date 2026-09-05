@@ -1,8 +1,9 @@
 import { useEffect, useRef } from "react";
-import type { ReactNode } from "react";
+import type { ReactNode, FocusEvent, MouseEvent as ReactMouseEvent } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import type { ThreeEvent } from "@react-three/fiber";
+import { Html } from "@react-three/drei";
 import { usePortfolioStore } from "../../store/usePortfolioStore";
 import type { SectionId } from "../../types/sections";
 
@@ -87,8 +88,7 @@ export default function InteractiveObject({ sectionId, onClick, highlightColor, 
     }
   });
 
-  function handleClick(e: ThreeEvent<MouseEvent>) {
-    e.stopPropagation();
+  function handleAction() {
     if (isTransitioning || isSceneTransitioning) return;
     if (onClick) {
       onClick();
@@ -98,6 +98,11 @@ export default function InteractiveObject({ sectionId, onClick, highlightColor, 
       // 同じセクションをクリックするとオーバービューに戻る（トグル）
       setActiveSection(activeSection === sectionId ? null : sectionId);
     }
+  }
+
+  function handleClick(e: ThreeEvent<MouseEvent>) {
+    e.stopPropagation();
+    handleAction();
   }
 
   function handlePointerOver(e: ThreeEvent<PointerEvent>) {
@@ -113,10 +118,34 @@ export default function InteractiveObject({ sectionId, onClick, highlightColor, 
     document.body.style.cursor = "auto";
   }
 
+  function handleHtmlClick(e: ReactMouseEvent) {
+    e.stopPropagation();
+    handleAction();
+  }
+
+  function handleHtmlFocus(e: FocusEvent) {
+    e.stopPropagation();
+    if (!hoveredRef.current && !isSceneTransitioning) {
+      hoveredRef.current = true;
+    }
+  }
+
+  function handleHtmlBlur() {
+    hoveredRef.current = false;
+  }
+
   return (
     <group onClick={handleClick} onPointerOver={handlePointerOver} onPointerOut={handlePointerOut}>
       <group ref={groupRef}>{children}</group>
       <group ref={highlightGroupRef} />
+      <Html distanceFactor={10} style={{ opacity: 0 }}>
+        <button
+          aria-label={sectionId ? `View ${sectionId}` : "Interactive Object"}
+          onClick={handleHtmlClick}
+          onFocus={handleHtmlFocus}
+          onBlur={handleHtmlBlur}
+        />
+      </Html>
     </group>
   );
 }
