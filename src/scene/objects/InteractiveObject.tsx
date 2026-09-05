@@ -20,6 +20,28 @@ const SHARED_HIGHLIGHT_MATERIAL = new THREE.MeshBasicMaterial({
   polygonOffsetUnits: -4,
 });
 
+const HIGHLIGHT_MATERIAL_CACHE = new Map<number, THREE.MeshBasicMaterial>();
+
+function getHighlightMaterial(color?: number) {
+  if (!color) return SHARED_HIGHLIGHT_MATERIAL;
+  if (!HIGHLIGHT_MATERIAL_CACHE.has(color)) {
+    HIGHLIGHT_MATERIAL_CACHE.set(
+      color,
+      new THREE.MeshBasicMaterial({
+        color,
+        transparent: true,
+        opacity: 0.3,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+        polygonOffset: true,
+        polygonOffsetFactor: -4,
+        polygonOffsetUnits: -4,
+      }),
+    );
+  }
+  return HIGHLIGHT_MATERIAL_CACHE.get(color)!;
+}
+
 interface Props {
   sectionId?: SectionId;
   onClick?: () => void;
@@ -49,18 +71,7 @@ export default function InteractiveObject({ sectionId, onClick, highlightColor, 
     const highlightGroup = highlightGroupRef.current;
     const cloned = groupRef.current.clone();
 
-    const mat = highlightColor
-      ? new THREE.MeshBasicMaterial({
-          color: highlightColor,
-          transparent: true,
-          opacity: 0.3,
-          depthWrite: false,
-          side: THREE.DoubleSide,
-          polygonOffset: true,
-          polygonOffsetFactor: -4,
-          polygonOffsetUnits: -4,
-        })
-      : SHARED_HIGHLIGHT_MATERIAL;
+    const mat = getHighlightMaterial(highlightColor);
 
     cloned.traverse((node) => {
       if (node instanceof THREE.Mesh) {
@@ -74,9 +85,6 @@ export default function InteractiveObject({ sectionId, onClick, highlightColor, 
     highlightGroup.visible = false;
     return () => {
       highlightGroup.clear();
-      if (highlightColor) {
-        mat.dispose();
-      }
     };
   }, [highlightColor]);
 
