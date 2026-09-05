@@ -1,4 +1,5 @@
 ## UX Improvement: 3D Object Accessibility
+
 - **Date:** 2026-09-05
 - **Context:** R3F InteractiveObject components represent clickable sections but were entirely opaque to screen readers and keyboard navigation.
 - **Action:** Added a visually hidden `<button>` embedded within a Drei `<Html>` component (`opacity: 0`, `distanceFactor: 10`) to each `InteractiveObject`.
