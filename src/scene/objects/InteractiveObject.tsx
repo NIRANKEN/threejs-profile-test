@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import type { ThreeEvent } from "@react-three/fiber";
+import { Html } from "@react-three/drei";
 import { usePortfolioStore } from "../../store/usePortfolioStore";
 import type { SectionId } from "../../types/sections";
 
@@ -25,9 +26,16 @@ interface Props {
   onClick?: () => void;
   highlightColor?: number;
   children: ReactNode;
+  ariaLabel?: string;
 }
 
-export default function InteractiveObject({ sectionId, onClick, highlightColor, children }: Props) {
+export default function InteractiveObject({
+  sectionId,
+  onClick,
+  highlightColor,
+  children,
+  ariaLabel,
+}: Props) {
   const hoveredRef = useRef(false);
   const groupRef = useRef<THREE.Group>(null);
   const highlightGroupRef = useRef<THREE.Group>(null);
@@ -81,14 +89,24 @@ export default function InteractiveObject({ sectionId, onClick, highlightColor, 
   }, [highlightColor]);
 
   // Reactの再レンダリングを避け、useFrameでvisibilityを直接制御
-  useFrame(() => {
+  useFrame((_, delta) => {
     if (highlightGroupRef.current) {
       highlightGroupRef.current.visible = hoveredRef.current && !isSceneTransitioning;
     }
+
+    if (groupRef.current) {
+      const targetScale = hoveredRef.current && !isSceneTransitioning ? 1.02 : 1.0;
+      // `THREE.MathUtils.lerp` を使用してスカラー値でスケールを補間する
+      const currentScale = groupRef.current.scale.x;
+      const nextScale = THREE.MathUtils.lerp(currentScale, targetScale, 10 * delta);
+      groupRef.current.scale.setScalar(nextScale);
+    }
   });
 
-  function handleClick(e: ThreeEvent<MouseEvent>) {
-    e.stopPropagation();
+  function handleClick(e?: ThreeEvent<MouseEvent> | React.MouseEvent<HTMLButtonElement>) {
+    if (e && "stopPropagation" in e) {
+      e.stopPropagation();
+    }
     if (isTransitioning || isSceneTransitioning) return;
     if (onClick) {
       onClick();
@@ -114,9 +132,28 @@ export default function InteractiveObject({ sectionId, onClick, highlightColor, 
   }
 
   return (
-    <group onClick={handleClick} onPointerOver={handlePointerOver} onPointerOut={handlePointerOut}>
+    <group
+      onClick={handleClick as unknown as (e: ThreeEvent<MouseEvent>) => void}
+      onPointerOver={handlePointerOver}
+      onPointerOut={handlePointerOut}
+    >
       <group ref={groupRef}>{children}</group>
       <group ref={highlightGroupRef} />
+      {ariaLabel && (
+        <Html distanceFactor={10} style={{ opacity: 0, pointerEvents: "none" }}>
+          <button
+            aria-label={ariaLabel}
+            onClick={(e) => handleClick(e)}
+            onFocus={() => {
+              if (!isSceneTransitioning) hoveredRef.current = true;
+            }}
+            onBlur={() => {
+              hoveredRef.current = false;
+            }}
+            style={{ pointerEvents: "auto", cursor: "pointer", width: "44px", height: "44px" }}
+          />
+        </Html>
+      )}
     </group>
   );
 }
