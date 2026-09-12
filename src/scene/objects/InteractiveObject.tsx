@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import type { ReactNode } from "react";
 import * as THREE from "three";
-import { useFrame } from "@react-three/fiber";
 import type { ThreeEvent } from "@react-three/fiber";
 import { usePortfolioStore } from "../../store/usePortfolioStore";
 import type { SectionId } from "../../types/sections";
@@ -19,6 +18,28 @@ const SHARED_HIGHLIGHT_MATERIAL = new THREE.MeshBasicMaterial({
   polygonOffsetFactor: -4,
   polygonOffsetUnits: -4,
 });
+
+// ─── 3D Optimization: Highlight Material Cache ──────────────────────────────
+const HIGHLIGHT_MATERIAL_CACHE = new Map<number, THREE.MeshBasicMaterial>();
+
+function getHighlightMaterial(color: number): THREE.MeshBasicMaterial {
+  if (!HIGHLIGHT_MATERIAL_CACHE.has(color)) {
+    HIGHLIGHT_MATERIAL_CACHE.set(
+      color,
+      new THREE.MeshBasicMaterial({
+        color,
+        transparent: true,
+        opacity: 0.3,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+        polygonOffset: true,
+        polygonOffsetFactor: -4,
+        polygonOffsetUnits: -4,
+      }),
+    );
+  }
+  return HIGHLIGHT_MATERIAL_CACHE.get(color)!;
+}
 
 interface Props {
   sectionId?: SectionId;
@@ -49,18 +70,7 @@ export default function InteractiveObject({ sectionId, onClick, highlightColor, 
     const highlightGroup = highlightGroupRef.current;
     const cloned = groupRef.current.clone();
 
-    const mat = highlightColor
-      ? new THREE.MeshBasicMaterial({
-          color: highlightColor,
-          transparent: true,
-          opacity: 0.3,
-          depthWrite: false,
-          side: THREE.DoubleSide,
-          polygonOffset: true,
-          polygonOffsetFactor: -4,
-          polygonOffsetUnits: -4,
-        })
-      : SHARED_HIGHLIGHT_MATERIAL;
+    const mat = highlightColor ? getHighlightMaterial(highlightColor) : SHARED_HIGHLIGHT_MATERIAL;
 
     cloned.traverse((node) => {
       if (node instanceof THREE.Mesh) {
@@ -74,18 +84,21 @@ export default function InteractiveObject({ sectionId, onClick, highlightColor, 
     highlightGroup.visible = false;
     return () => {
       highlightGroup.clear();
-      if (highlightColor) {
-        mat.dispose();
-      }
+      // Do not dispose material here, it's shared from cache
     };
   }, [highlightColor]);
 
-  // Reactの再レンダリングを避け、useFrameでvisibilityを直接制御
-  useFrame(() => {
+  // Update visibility based on hover and transition state
+  const updateVisibility = (hovering: boolean, transitioning: boolean) => {
     if (highlightGroupRef.current) {
-      highlightGroupRef.current.visible = hoveredRef.current && !isSceneTransitioning;
+      highlightGroupRef.current.visible = hovering && !transitioning;
     }
-  });
+  };
+
+  // Listen for scene transition changes to update visibility
+  useEffect(() => {
+    updateVisibility(hoveredRef.current, isSceneTransitioning);
+  }, [isSceneTransitioning]);
 
   function handleClick(e: ThreeEvent<MouseEvent>) {
     e.stopPropagation();
@@ -105,12 +118,14 @@ export default function InteractiveObject({ sectionId, onClick, highlightColor, 
     if (!hoveredRef.current && !isSceneTransitioning) {
       hoveredRef.current = true;
       document.body.style.cursor = "pointer";
+      updateVisibility(hoveredRef.current, isSceneTransitioning);
     }
   }
 
   function handlePointerOut() {
     hoveredRef.current = false;
     document.body.style.cursor = "auto";
+    updateVisibility(hoveredRef.current, isSceneTransitioning);
   }
 
   return (
