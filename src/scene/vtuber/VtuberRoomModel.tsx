@@ -95,7 +95,11 @@ export function VtuberRoomModel() {
       </group>
 
       {/* ── Profile: ソファに立てかけたプロフィール看板 ── */}
-      <InteractiveObject sectionId="profile" highlightColor={0xff9944} ariaLabel="プロフィールを見る">
+      <InteractiveObject
+        sectionId="profile"
+        highlightColor={0xff9944}
+        ariaLabel="プロフィールを見る"
+      >
         <mesh
           position={[1.1, 0.5 + PORTRAIT_HEIGHT / 2, -0.25]}
           rotation={[0, (5 * Math.PI) / 4, 0]}
@@ -138,7 +142,11 @@ export function VtuberRoomModel() {
       </group>
 
       {/* ── Guidelines: ラウンジサイドテーブル / 配信規約ガイド ── */}
-      <InteractiveObject sectionId="guidelines" highlightColor={0x34d399} ariaLabel="ガイドラインを見る">
+      <InteractiveObject
+        sectionId="guidelines"
+        highlightColor={0x34d399}
+        ariaLabel="ガイドラインを見る"
+      >
         <group position={[2.6, 0.7, -1.4]} rotation={[0, -0.5, 0]}>
           {/* ガイドブック / スタンド */}
           <mesh castShadow>
@@ -169,7 +177,11 @@ export function VtuberRoomModel() {
       </InteractiveObject>
 
       {/* ── REAL部屋へのポータル（出入口エリア）── */}
-      <InteractiveObject onClick={() => setSceneMode("real")} highlightColor={0x38bdf8} ariaLabel="リアルルームへ移動">
+      <InteractiveObject
+        onClick={() => setSceneMode("real")}
+        highlightColor={0x38bdf8}
+        ariaLabel="リアルルームへ移動"
+      >
         <group position={[0, 2.5, 1.7]} rotation={[0, Math.PI, 0]}>
           {/* ポータルゲート / ドアサイン */}
           <mesh>

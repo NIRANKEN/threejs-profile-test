@@ -1,4 +1,3 @@
-
 ## 3D Accessibility & Micro-Interactions
 
 - **A11y (Screen Readers & Keyboard Navigation)**: Implemented invisible HTML buttons via `@react-three/drei`'s `<Html>` within interactive 3D meshes (e.g., `InteractiveObject`). By assigning `aria-label` properties, these elements become navigable via keyboard and announce their intent properly to screen readers without breaking the WebGL aesthetic. Handled DOM `onFocus`/`onBlur` parallel to WebGL pointer events to synchronize visual cues.
