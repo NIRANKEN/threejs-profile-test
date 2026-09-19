@@ -1,6 +1,7 @@
 import { Suspense, Component } from "react";
 import type { ErrorInfo, ReactNode } from "react";
 import { Canvas } from "@react-three/fiber";
+import { Preload } from "@react-three/drei";
 import SceneRoot from "./scene/SceneRoot";
 import VtuberSceneRoot from "./scene/vtuber/VtuberSceneRoot";
 import PanelOverlay from "./panels/PanelOverlay";
@@ -119,6 +120,7 @@ export default function App() {
             gl={{ antialias: true }}
           >
             {currentScene === "real" ? <SceneRoot /> : <VtuberSceneRoot />}
+            <Preload all />
           </Canvas>
         </Suspense>
 
