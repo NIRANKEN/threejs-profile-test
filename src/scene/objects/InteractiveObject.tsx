@@ -6,7 +6,7 @@ import type { ThreeEvent } from "@react-three/fiber";
 import { usePortfolioStore } from "../../store/usePortfolioStore";
 import type { SectionId } from "../../types/sections";
 
-// ─── 3D Optimization: Shared Material ───────────────────────────────────────
+// ─── 3D Optimization: Shared Material Cache ─────────────────────────────────
 const SHARED_HIGHLIGHT_MATERIAL = new THREE.MeshBasicMaterial({
   color: 0x00aaff,
   transparent: true,
@@ -19,6 +19,32 @@ const SHARED_HIGHLIGHT_MATERIAL = new THREE.MeshBasicMaterial({
   polygonOffsetFactor: -4,
   polygonOffsetUnits: -4,
 });
+
+// Cache for dynamically parameterized highlight materials based on color.
+// This prevents repeated instantiations of THREE.MeshBasicMaterial when
+// InteractiveObject components mount, reducing garbage collection pressure
+// and VRAM usage.
+const highlightMaterialCache = new Map<number, THREE.MeshBasicMaterial>();
+
+function getHighlightMaterial(color?: number): THREE.MeshBasicMaterial {
+  if (color === undefined) return SHARED_HIGHLIGHT_MATERIAL;
+
+  let mat = highlightMaterialCache.get(color);
+  if (!mat) {
+    mat = new THREE.MeshBasicMaterial({
+      color,
+      transparent: true,
+      opacity: 0.3,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+      polygonOffset: true,
+      polygonOffsetFactor: -4,
+      polygonOffsetUnits: -4,
+    });
+    highlightMaterialCache.set(color, mat);
+  }
+  return mat;
+}
 
 interface Props {
   sectionId?: SectionId;
@@ -49,18 +75,7 @@ export default function InteractiveObject({ sectionId, onClick, highlightColor, 
     const highlightGroup = highlightGroupRef.current;
     const cloned = groupRef.current.clone();
 
-    const mat = highlightColor
-      ? new THREE.MeshBasicMaterial({
-          color: highlightColor,
-          transparent: true,
-          opacity: 0.3,
-          depthWrite: false,
-          side: THREE.DoubleSide,
-          polygonOffset: true,
-          polygonOffsetFactor: -4,
-          polygonOffsetUnits: -4,
-        })
-      : SHARED_HIGHLIGHT_MATERIAL;
+    const mat = getHighlightMaterial(highlightColor);
 
     cloned.traverse((node) => {
       if (node instanceof THREE.Mesh) {
@@ -74,9 +89,8 @@ export default function InteractiveObject({ sectionId, onClick, highlightColor, 
     highlightGroup.visible = false;
     return () => {
       highlightGroup.clear();
-      if (highlightColor) {
-        mat.dispose();
-      }
+      // Optimization: Do NOT dispose cached materials on component unmount
+      // as they are shared at the module level.
     };
   }, [highlightColor]);
 

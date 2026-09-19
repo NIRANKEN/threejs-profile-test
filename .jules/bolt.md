@@ -1,3 +1,5 @@
 ## 2024-05-19 - [BakeShadows Optimization] **Learning:** Static scenes benefit heavily from BakeShadows. **Action:** Added BakeShadows when no dynamic lights or moving objects that cast shadows exist.
 
 ## 2026-05-02 - [Module-Level Shared Materials] **Learning:** Repeated instantiations of the same THREE.Material via useMemo across multiple identical components increase VRAM usage and put pressure on garbage collection (GC) and .dispose() cleanup inside useEffect. **Action:** Instantiate shared standard/basic materials at the module scope outside of the React component whenever possible to ensure true sharing, reduce VRAM footprint, and bypass complex component-level GC handling.
+
+## 2024-11-20 - [Preload Optimization and Dynamic Material Caching] **Learning:** Scene toggling stutters due to shader compilation, and dynamic highlight materials initialized inside component lifecycles cause GC pressure. **Action:** Applied `<Preload all />` in the main Canvas to force WebGL compilation upfront, and implemented a module-level Map cache in `InteractiveObject.tsx` for parameterized `THREE.MeshBasicMaterial` instances to prevent repeated instantiation and disposal.
