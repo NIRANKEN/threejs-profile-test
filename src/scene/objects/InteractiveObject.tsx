@@ -29,7 +29,13 @@ interface Props {
   children: ReactNode;
 }
 
-export default function InteractiveObject({ sectionId, onClick, highlightColor, ariaLabel, children }: Props) {
+export default function InteractiveObject({
+  sectionId,
+  onClick,
+  highlightColor,
+  ariaLabel,
+  children,
+}: Props) {
   const hoveredRef = useRef(false);
   const groupRef = useRef<THREE.Group>(null);
   const highlightGroupRef = useRef<THREE.Group>(null);
@@ -115,7 +121,8 @@ export default function InteractiveObject({ sectionId, onClick, highlightColor, 
     document.body.style.cursor = "auto";
   }
 
-  const label = ariaLabel || (sectionId ? `${sectionId}の詳細を表示` : "インタラクティブオブジェクト");
+  const label =
+    ariaLabel || (sectionId ? `${sectionId}の詳細を表示` : "インタラクティブオブジェクト");
 
   return (
     <group onClick={handleClick} onPointerOver={handlePointerOver} onPointerOut={handlePointerOut}>
