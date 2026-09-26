@@ -1,7 +1,8 @@
 import { useEffect, useRef } from "react";
-import type { ReactNode } from "react";
+import type { ReactNode, MouseEvent as ReactMouseEvent } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
+import { Html } from "@react-three/drei";
 import type { ThreeEvent } from "@react-three/fiber";
 import { usePortfolioStore } from "../../store/usePortfolioStore";
 import type { SectionId } from "../../types/sections";
@@ -24,10 +25,11 @@ interface Props {
   sectionId?: SectionId;
   onClick?: () => void;
   highlightColor?: number;
+  ariaLabel?: string;
   children: ReactNode;
 }
 
-export default function InteractiveObject({ sectionId, onClick, highlightColor, children }: Props) {
+export default function InteractiveObject({ sectionId, onClick, highlightColor, ariaLabel, children }: Props) {
   const hoveredRef = useRef(false);
   const groupRef = useRef<THREE.Group>(null);
   const highlightGroupRef = useRef<THREE.Group>(null);
@@ -87,7 +89,7 @@ export default function InteractiveObject({ sectionId, onClick, highlightColor, 
     }
   });
 
-  function handleClick(e: ThreeEvent<MouseEvent>) {
+  function handleClick(e: ThreeEvent<MouseEvent> | ReactMouseEvent) {
     e.stopPropagation();
     if (isTransitioning || isSceneTransitioning) return;
     if (onClick) {
@@ -113,10 +115,15 @@ export default function InteractiveObject({ sectionId, onClick, highlightColor, 
     document.body.style.cursor = "auto";
   }
 
+  const label = ariaLabel || (sectionId ? `${sectionId}の詳細を表示` : "インタラクティブオブジェクト");
+
   return (
     <group onClick={handleClick} onPointerOver={handlePointerOver} onPointerOut={handlePointerOut}>
       <group ref={groupRef}>{children}</group>
       <group ref={highlightGroupRef} />
+      <Html distanceFactor={10} style={{ opacity: 0 }}>
+        <button aria-label={label} onClick={handleClick} />
+      </Html>
     </group>
   );
 }
