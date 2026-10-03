@@ -60,9 +60,7 @@ export default function InteractiveObject({ sectionId, onClick, highlightColor, 
     const highlightGroup = highlightGroupRef.current;
     const cloned = groupRef.current.clone();
 
-    const mat = highlightColor
-      ? getHighlightMaterial(highlightColor)
-      : SHARED_HIGHLIGHT_MATERIAL;
+    const mat = highlightColor ? getHighlightMaterial(highlightColor) : SHARED_HIGHLIGHT_MATERIAL;
 
     cloned.traverse((node) => {
       if (node instanceof THREE.Mesh) {
