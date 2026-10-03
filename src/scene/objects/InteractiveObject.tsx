@@ -7,18 +7,29 @@ import { usePortfolioStore } from "../../store/usePortfolioStore";
 import type { SectionId } from "../../types/sections";
 
 // ─── 3D Optimization: Shared Material ───────────────────────────────────────
-const SHARED_HIGHLIGHT_MATERIAL = new THREE.MeshBasicMaterial({
-  color: 0x00aaff,
-  transparent: true,
-  opacity: 0.3,
-  depthWrite: false,
-  side: THREE.DoubleSide,
-  // 薄い平面オブジェクトと同一平面上に重なるとz-fightingでジャギーになるため、
-  // カメラ側にわずかに押し出して competing depth を回避する
-  polygonOffset: true,
-  polygonOffsetFactor: -4,
-  polygonOffsetUnits: -4,
-});
+const highlightMaterialCache = new Map<number, THREE.MeshBasicMaterial>();
+
+function getHighlightMaterial(color: number = 0x00aaff): THREE.MeshBasicMaterial {
+  if (highlightMaterialCache.has(color)) {
+    return highlightMaterialCache.get(color)!;
+  }
+  const mat = new THREE.MeshBasicMaterial({
+    color,
+    transparent: true,
+    opacity: 0.3,
+    depthWrite: false,
+    side: THREE.DoubleSide,
+    // 薄い平面オブジェクトと同一平面上に重なるとz-fightingでジャギーになるため、
+    // カメラ側にわずかに押し出して competing depth を回避する
+    polygonOffset: true,
+    polygonOffsetFactor: -4,
+    polygonOffsetUnits: -4,
+  });
+  highlightMaterialCache.set(color, mat);
+  return mat;
+}
+
+const SHARED_HIGHLIGHT_MATERIAL = getHighlightMaterial();
 
 interface Props {
   sectionId?: SectionId;
@@ -50,16 +61,7 @@ export default function InteractiveObject({ sectionId, onClick, highlightColor, 
     const cloned = groupRef.current.clone();
 
     const mat = highlightColor
-      ? new THREE.MeshBasicMaterial({
-          color: highlightColor,
-          transparent: true,
-          opacity: 0.3,
-          depthWrite: false,
-          side: THREE.DoubleSide,
-          polygonOffset: true,
-          polygonOffsetFactor: -4,
-          polygonOffsetUnits: -4,
-        })
+      ? getHighlightMaterial(highlightColor)
       : SHARED_HIGHLIGHT_MATERIAL;
 
     cloned.traverse((node) => {
@@ -74,9 +76,6 @@ export default function InteractiveObject({ sectionId, onClick, highlightColor, 
     highlightGroup.visible = false;
     return () => {
       highlightGroup.clear();
-      if (highlightColor) {
-        mat.dispose();
-      }
     };
   }, [highlightColor]);
 
