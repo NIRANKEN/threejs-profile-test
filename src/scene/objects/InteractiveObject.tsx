@@ -20,10 +20,35 @@ const SHARED_HIGHLIGHT_MATERIAL = new THREE.MeshBasicMaterial({
   polygonOffsetUnits: -4,
 });
 
+// ─── 3D Optimization: Shared Material Cache ─────────────────────────────────
+// Using a cache reuses materials with dynamic parameters (e.g., highlightColor)
+// and reduces GC overhead and VRAM consumption caused by creating and destroying
+// materials in the useEffect hook inside components.
+const CUSTOM_HIGHLIGHT_MATERIALS_CACHE = new Map<number | string, THREE.MeshBasicMaterial>();
+
+function getCustomHighlightMaterial(color: number | string) {
+  if (!CUSTOM_HIGHLIGHT_MATERIALS_CACHE.has(color)) {
+    CUSTOM_HIGHLIGHT_MATERIALS_CACHE.set(
+      color,
+      new THREE.MeshBasicMaterial({
+        color,
+        transparent: true,
+        opacity: 0.3,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+        polygonOffset: true,
+        polygonOffsetFactor: -4,
+        polygonOffsetUnits: -4,
+      })
+    );
+  }
+  return CUSTOM_HIGHLIGHT_MATERIALS_CACHE.get(color)!;
+}
+
 interface Props {
   sectionId?: SectionId;
   onClick?: () => void;
-  highlightColor?: number;
+  highlightColor?: number | string;
   children: ReactNode;
 }
 
@@ -49,17 +74,10 @@ export default function InteractiveObject({ sectionId, onClick, highlightColor, 
     const highlightGroup = highlightGroupRef.current;
     const cloned = groupRef.current.clone();
 
+    // 3D Optimization: Reusing cached materials avoids generating new Three.js
+    // object instances on mount, reducing GC pressure and Draw calls/VRAM usage.
     const mat = highlightColor
-      ? new THREE.MeshBasicMaterial({
-          color: highlightColor,
-          transparent: true,
-          opacity: 0.3,
-          depthWrite: false,
-          side: THREE.DoubleSide,
-          polygonOffset: true,
-          polygonOffsetFactor: -4,
-          polygonOffsetUnits: -4,
-        })
+      ? getCustomHighlightMaterial(highlightColor)
       : SHARED_HIGHLIGHT_MATERIAL;
 
     cloned.traverse((node) => {
@@ -74,9 +92,8 @@ export default function InteractiveObject({ sectionId, onClick, highlightColor, 
     highlightGroup.visible = false;
     return () => {
       highlightGroup.clear();
-      if (highlightColor) {
-        mat.dispose();
-      }
+      // Optimization: Do NOT dispose of shared or cached materials here.
+      // Disposal is managed at the application/module level to ensure true sharing.
     };
   }, [highlightColor]);
 
