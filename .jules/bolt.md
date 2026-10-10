@@ -1,4 +1,5 @@
 ## 2024-05-19 - [BakeShadows Optimization] **Learning:** Static scenes benefit heavily from BakeShadows. **Action:** Added BakeShadows when no dynamic lights or moving objects that cast shadows exist.
 
 ## 2026-05-02 - [Module-Level Shared Materials] **Learning:** Repeated instantiations of the same THREE.Material via useMemo across multiple identical components increase VRAM usage and put pressure on garbage collection (GC) and .dispose() cleanup inside useEffect. **Action:** Instantiate shared standard/basic materials at the module scope outside of the React component whenever possible to ensure true sharing, reduce VRAM footprint, and bypass complex component-level GC handling.
+
 \n## 2026-10-10 - [Module-Level Map Cache for Dynamic Materials] **Learning:** Using a Map cache for dynamically parameterized materials (e.g. colors passed as props) avoids new material instantiation inside useEffect hooks, heavily reducing Garbage Collection overhead and VRAM usage. **Action:** Use a Map cache outside component scope to reuse dynamically parameterized materials.

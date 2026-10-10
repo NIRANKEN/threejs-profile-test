@@ -39,7 +39,7 @@ function getCustomHighlightMaterial(color: number | string) {
         polygonOffset: true,
         polygonOffsetFactor: -4,
         polygonOffsetUnits: -4,
-      })
+      }),
     );
   }
   return CUSTOM_HIGHLIGHT_MATERIALS_CACHE.get(color)!;
