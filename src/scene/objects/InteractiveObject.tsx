@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import type { ThreeEvent } from "@react-three/fiber";
+import { Html } from "@react-three/drei";
 import { usePortfolioStore } from "../../store/usePortfolioStore";
 import type { SectionId } from "../../types/sections";
 
@@ -87,8 +88,8 @@ export default function InteractiveObject({ sectionId, onClick, highlightColor, 
     }
   });
 
-  function handleClick(e: ThreeEvent<MouseEvent>) {
-    e.stopPropagation();
+  function handleClick(e?: ThreeEvent<MouseEvent> | React.MouseEvent) {
+    e?.stopPropagation?.();
     if (isTransitioning || isSceneTransitioning) return;
     if (onClick) {
       onClick();
@@ -117,6 +118,13 @@ export default function InteractiveObject({ sectionId, onClick, highlightColor, 
     <group onClick={handleClick} onPointerOver={handlePointerOver} onPointerOut={handlePointerOut}>
       <group ref={groupRef}>{children}</group>
       <group ref={highlightGroupRef} />
+      <Html distanceFactor={10} style={{ opacity: 0 }}>
+        <button
+          aria-label={sectionId ? `Interact with ${sectionId}` : "Interact with 3D object"}
+          onClick={handleClick}
+          style={{ width: "100%", height: "100%", cursor: "pointer" }}
+        />
+      </Html>
     </group>
   );
 }
