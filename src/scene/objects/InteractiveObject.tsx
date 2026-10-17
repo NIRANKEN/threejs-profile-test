@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import type { ThreeEvent } from "@react-three/fiber";
+import { Html } from "@react-three/drei";
 import { usePortfolioStore } from "../../store/usePortfolioStore";
 import type { SectionId } from "../../types/sections";
 
@@ -24,10 +25,11 @@ interface Props {
   sectionId?: SectionId;
   onClick?: () => void;
   highlightColor?: number;
+  ariaLabel?: string;
   children: ReactNode;
 }
 
-export default function InteractiveObject({ sectionId, onClick, highlightColor, children }: Props) {
+export default function InteractiveObject({ sectionId, onClick, highlightColor, ariaLabel, children }: Props) {
   const hoveredRef = useRef(false);
   const groupRef = useRef<THREE.Group>(null);
   const highlightGroupRef = useRef<THREE.Group>(null);
@@ -87,8 +89,8 @@ export default function InteractiveObject({ sectionId, onClick, highlightColor, 
     }
   });
 
-  function handleClick(e: ThreeEvent<MouseEvent>) {
-    e.stopPropagation();
+  function handleClick(e?: ThreeEvent<MouseEvent> | React.MouseEvent) {
+    e?.stopPropagation?.();
     if (isTransitioning || isSceneTransitioning) return;
     if (onClick) {
       onClick();
@@ -113,10 +115,27 @@ export default function InteractiveObject({ sectionId, onClick, highlightColor, 
     document.body.style.cursor = "auto";
   }
 
+  function handleFocus() {
+    if (!isSceneTransitioning) hoveredRef.current = true;
+  }
+
+  function handleBlur() {
+    hoveredRef.current = false;
+  }
+
   return (
-    <group onClick={handleClick} onPointerOver={handlePointerOver} onPointerOut={handlePointerOut}>
+    <group onClick={handleClick as unknown as (e: ThreeEvent<MouseEvent>) => void} onPointerOver={handlePointerOver} onPointerOut={handlePointerOut}>
       <group ref={groupRef}>{children}</group>
       <group ref={highlightGroupRef} />
+      <Html distanceFactor={10} style={{ opacity: 0, pointerEvents: "none" }}>
+        <button
+          aria-label={ariaLabel || sectionId || "Interactive object"}
+          onClick={handleClick}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          style={{ pointerEvents: "auto", cursor: "pointer", width: "100%", height: "100%" }}
+        />
+      </Html>
     </group>
   );
 }
