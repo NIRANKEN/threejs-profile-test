@@ -1,3 +1,5 @@
 ## 2024-05-19 - [BakeShadows Optimization] **Learning:** Static scenes benefit heavily from BakeShadows. **Action:** Added BakeShadows when no dynamic lights or moving objects that cast shadows exist.
 
 ## 2026-05-02 - [Module-Level Shared Materials] **Learning:** Repeated instantiations of the same THREE.Material via useMemo across multiple identical components increase VRAM usage and put pressure on garbage collection (GC) and .dispose() cleanup inside useEffect. **Action:** Instantiate shared standard/basic materials at the module scope outside of the React component whenever possible to ensure true sharing, reduce VRAM footprint, and bypass complex component-level GC handling.
+
+## 2026-10-17 - [Preload for Scene Transitions] **Learning:** Scene transitions can cause noticeable lag or dropped frames as Three.js lazily compiles shaders and materials for new assets just as they enter the scene. **Action:** Added `<Preload all />` inside the Canvas to force upfront compilation of materials and shaders for smoother transitions between the "real" and "virtual" environments.
