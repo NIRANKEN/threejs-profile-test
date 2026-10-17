@@ -1,6 +1,7 @@
 import { Suspense, Component } from "react";
 import type { ErrorInfo, ReactNode } from "react";
 import { Canvas } from "@react-three/fiber";
+import { Preload } from "@react-three/drei";
 import SceneRoot from "./scene/SceneRoot";
 import VtuberSceneRoot from "./scene/vtuber/VtuberSceneRoot";
 import PanelOverlay from "./panels/PanelOverlay";
@@ -119,6 +120,8 @@ export default function App() {
             gl={{ antialias: true }}
           >
             {currentScene === "real" ? <SceneRoot /> : <VtuberSceneRoot />}
+            {/* ⚡ Bolt: Forces upfront WebGL material/shader compilation to prevent frame drops during scene transitions. Uses key={currentScene} to re-trigger Preload when toggling between scenes. Expected impact: Reduces stutter/lag when new materials become visible. */}
+            <Preload key={currentScene} all />
           </Canvas>
         </Suspense>
 
