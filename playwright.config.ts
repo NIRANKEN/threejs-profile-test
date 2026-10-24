@@ -18,7 +18,7 @@ export default defineConfig({
     // Ubuntuランナーに公式リポジトリからインストールされる安定版Chromeを使う。
     // 特定のChrome for Testingビルドで、下方向ドラッグ中にSwiftShaderの描画が
     // ハングする再現性のある問題が確認されたため（ローカルの旧Chromiumでは非再現）
-    ...(process.env.CI ? { channel: "chrome" as const } : {}),
+    ...(process.env.CI ? { channel: "chromium" as const } : {}),
     // headless Chromium で WebGL/Three.js を動作させるためのフラグ。
     // "--use-angle=gl" は実GPUが無いLinux CIだとMesaの低速なソフトウェアGL
     // (llvmpipe) にフォールバックし、連続したポインタ移動を伴うテストが
