@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import type { ThreeEvent } from "@react-three/fiber";
+import { Html } from "@react-three/drei";
 import { usePortfolioStore } from "../../store/usePortfolioStore";
 import type { SectionId } from "../../types/sections";
 
@@ -24,10 +25,17 @@ interface Props {
   sectionId?: SectionId;
   onClick?: () => void;
   highlightColor?: number;
+  ariaLabel?: string;
   children: ReactNode;
 }
 
-export default function InteractiveObject({ sectionId, onClick, highlightColor, children }: Props) {
+export default function InteractiveObject({
+  sectionId,
+  onClick,
+  highlightColor,
+  ariaLabel,
+  children,
+}: Props) {
   const hoveredRef = useRef(false);
   const groupRef = useRef<THREE.Group>(null);
   const highlightGroupRef = useRef<THREE.Group>(null);
@@ -87,8 +95,8 @@ export default function InteractiveObject({ sectionId, onClick, highlightColor, 
     }
   });
 
-  function handleClick(e: ThreeEvent<MouseEvent>) {
-    e.stopPropagation();
+  function handleClick(e?: ThreeEvent<MouseEvent> | React.MouseEvent) {
+    e?.stopPropagation?.();
     if (isTransitioning || isSceneTransitioning) return;
     if (onClick) {
       onClick();
@@ -100,23 +108,38 @@ export default function InteractiveObject({ sectionId, onClick, highlightColor, 
     }
   }
 
-  function handlePointerOver(e: ThreeEvent<PointerEvent>) {
-    e.stopPropagation();
+  function handlePointerOver(e?: ThreeEvent<PointerEvent> | React.FocusEvent) {
+    e?.stopPropagation?.();
     if (!hoveredRef.current && !isSceneTransitioning) {
       hoveredRef.current = true;
       document.body.style.cursor = "pointer";
     }
   }
 
-  function handlePointerOut() {
+  function handlePointerOut(e?: ThreeEvent<PointerEvent> | React.FocusEvent) {
+    e?.stopPropagation?.();
     hoveredRef.current = false;
     document.body.style.cursor = "auto";
   }
 
   return (
-    <group onClick={handleClick} onPointerOver={handlePointerOver} onPointerOut={handlePointerOut}>
+    <group
+      onClick={handleClick as unknown as (e: ThreeEvent<MouseEvent>) => void}
+      onPointerOver={handlePointerOver as unknown as (e: ThreeEvent<PointerEvent>) => void}
+      onPointerOut={handlePointerOut as unknown as (e: ThreeEvent<PointerEvent>) => void}
+    >
       <group ref={groupRef}>{children}</group>
       <group ref={highlightGroupRef} />
+      {ariaLabel && (
+        <Html distanceFactor={10} style={{ opacity: 0, pointerEvents: "none" }}>
+          <button
+            aria-label={ariaLabel}
+            onClick={handleClick}
+            onFocus={handlePointerOver}
+            onBlur={handlePointerOut}
+          />
+        </Html>
+      )}
     </group>
   );
 }
