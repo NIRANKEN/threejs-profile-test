@@ -29,7 +29,13 @@ interface Props {
   children: ReactNode;
 }
 
-export default function InteractiveObject({ sectionId, onClick, highlightColor, ariaLabel, children }: Props) {
+export default function InteractiveObject({
+  sectionId,
+  onClick,
+  highlightColor,
+  ariaLabel,
+  children,
+}: Props) {
   const hoveredRef = useRef(false);
   const groupRef = useRef<THREE.Group>(null);
   const highlightGroupRef = useRef<THREE.Group>(null);
@@ -117,7 +123,11 @@ export default function InteractiveObject({ sectionId, onClick, highlightColor, 
   }
 
   return (
-    <group onClick={handleClick as unknown as (e: ThreeEvent<MouseEvent>) => void} onPointerOver={handlePointerOver as unknown as (e: ThreeEvent<PointerEvent>) => void} onPointerOut={handlePointerOut as unknown as (e: ThreeEvent<PointerEvent>) => void}>
+    <group
+      onClick={handleClick as unknown as (e: ThreeEvent<MouseEvent>) => void}
+      onPointerOver={handlePointerOver as unknown as (e: ThreeEvent<PointerEvent>) => void}
+      onPointerOut={handlePointerOut as unknown as (e: ThreeEvent<PointerEvent>) => void}
+    >
       <group ref={groupRef}>{children}</group>
       <group ref={highlightGroupRef} />
       {ariaLabel && (

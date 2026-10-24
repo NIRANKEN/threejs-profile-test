@@ -221,7 +221,11 @@ export function RoomModel() {
           </group>
 
           {/* ── VRゴーグル: クリックで VIRTUAL シーンへ遷移 ── */}
-          <InteractiveObject onClick={() => setSceneMode("virtual")} highlightColor={0xa855f7} ariaLabel="バーチャルモードへ切り替え">
+          <InteractiveObject
+            onClick={() => setSceneMode("virtual")}
+            highlightColor={0xa855f7}
+            ariaLabel="バーチャルモードへ切り替え"
+          >
             <group position={[-1.9, 1.05, -1.1]} rotation={[0, 0.4, 0]} scale={0.9}>
               {/* ゴーグル本体 */}
               <mesh castShadow>
